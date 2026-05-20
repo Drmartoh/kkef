@@ -4,9 +4,12 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import IntegrityError
 from django.db.models import Q, Sum
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.views import View
 from django.views.generic import TemplateView
+
+from apps.core.mixins import ManageAccessMixin, user_can_manage_site
+from apps.core.manage_dashboard import build_manage_context
 
 from apps.core.forms import DonorIntakeForm, GroupJoinApplicationForm
 from apps.core.mailers import send_donor_intake_notification, send_group_application_notification
@@ -106,12 +109,37 @@ class AboutView(TemplateView):
     template_name = "public/about.html"
 
 
+class OfficialsView(TemplateView):
+    template_name = "public/officials.html"
+
+    def get_context_data(self, **kwargs):
+        from apps.core.officials import get_officials_context
+
+        ctx = super().get_context_data(**kwargs)
+        ctx.update(get_officials_context())
+        return ctx
+
+
 class ImpactView(TemplateView):
     template_name = "public/impact.html"
 
 
+class ManageDashboardView(ManageAccessMixin, TemplateView):
+    template_name = "manage/workspace.html"
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx.update(build_manage_context())
+        return ctx
+
+
 class DashboardView(LoginRequiredMixin, TemplateView):
     template_name = "dashboard/index.html"
+
+    def dispatch(self, request, *args, **kwargs):
+        if user_can_manage_site(request.user):
+            return redirect("core:manage_dashboard")
+        return super().dispatch(request, *args, **kwargs)
 
     def get_template_names(self):
         user = self.request.user

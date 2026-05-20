@@ -73,6 +73,35 @@ class Project(TimeStampedModel):
     def __str__(self) -> str:
         return self.title
 
+    @property
+    def is_public(self) -> bool:
+        return self.status not in (self.Status.PENDING, self.Status.UNDER_REVIEW, self.Status.REJECTED)
+
+
+class ProjectMedia(TimeStampedModel):
+    """Gallery images and media attachments for a project."""
+
+    class MediaType(models.TextChoices):
+        PHOTO = "photo", "Photo"
+        VIDEO = "video", "Video link"
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    project = models.ForeignKey(Project, related_name="media_items", on_delete=models.CASCADE)
+    media_type = models.CharField(max_length=16, choices=MediaType.choices, default=MediaType.PHOTO)
+    image = models.ImageField(upload_to="project_media/gallery/", blank=True)
+    video_url = models.URLField(blank=True)
+    caption = models.CharField(max_length=255, blank=True)
+    tags = models.CharField(max_length=255, blank=True, help_text="Comma-separated tags")
+    taken_on = models.DateField(null=True, blank=True)
+    sort_order = models.PositiveSmallIntegerField(default=0)
+    is_featured = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ["sort_order", "-created_at"]
+
+    def __str__(self) -> str:
+        return f"{self.project.title} · {self.caption or self.media_type}"
+
 
 class ProjectStakeholder(TimeStampedModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

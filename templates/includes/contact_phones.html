@@ -1,0 +1,1 @@
+{% for phone in KKEF_PHONES %}<a href="tel:{{ phone.tel }}" class="font-medium text-forest hover:underline dark:text-emerald-300">{{ phone.display }}</a>{% if not forloop.last %}<span class="text-slate-400"> / </span>{% endif %}{% endfor %}

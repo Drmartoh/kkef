@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}Leadership & Officials · KKEF{% endblock %}
+{% block meta_description %}Meet the elected officials and secretariat steering the Kiambu-Karai Empowerment Forum — chairperson, executive board, and programme leads.{% endblock %}
+
+{% block extra_head %}
+<style>
+  .official-card .hover-panel {
+    transform: translateY(0.5rem);
+  }
+  .official-card:hover .hover-panel,
+  .official-card:focus-within .hover-panel,
+  .official-card.is-open .hover-panel {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+  .official-card:hover .avatar-ring,
+  .official-card:focus-within .avatar-ring,
+  .official-card.is-open .avatar-ring {
+    --tw-ring-color: rgb(21 128 61 / 0.6);
+    box-shadow: 0 20px 40px -12px rgb(21 128 61 / 0.35);
+  }
+</style>
+{% endblock %}
+
+{% block hero %}
+<section class="border-b border-white/30 bg-gradient-to-br from-lagoon via-lagoon/95 to-forest/80 py-16 text-white dark:border-white/10">
+    <div class="mx-auto max-w-6xl px-4 text-center">
+        <p class="text-xs uppercase tracking-[0.35em] text-emerald-200/90">Governance & accountability</p>
+        <h1 class="mt-4 font-serif text-4xl sm:text-5xl">Forum officials & leadership</h1>
+        <p class="mx-auto mt-4 max-w-2xl text-base text-slate-200 sm:text-lg">
+            The men and women stewarding transparency, ward representation, and dignified partnerships
+            across Kiambu-Karai. Hover a portrait for extended responsibilities — tap on mobile.
+        </p>
+    </div>
+</section>
+{% endblock %}
+
+{% block content %}
+<section class="mx-auto max-w-7xl px-4 py-16 space-y-20">
+    <div class="text-center max-w-3xl mx-auto">
+        <p class="text-xs uppercase tracking-[0.3em] text-forest">Executive board</p>
+        <h2 class="mt-2 font-serif text-3xl text-lagoon dark:text-white">Elected leadership</h2>
+        <p class="mt-3 text-sm text-slate-600 dark:text-slate-300">
+            Five core officers mandated by the KKEF constitution to guide strategy, records, treasury, and programme verification.
+        </p>
+    </div>
+
+    <div class="grid gap-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+        {% for official in executive_officials %}
+        {% include "public/includes/official_card.html" with official=official large=True %}
+        {% endfor %}
+    </div>
+
+    <div class="border-t border-white/40 pt-16 dark:border-white/10">
+        <div class="text-center max-w-3xl mx-auto">
+            <p class="text-xs uppercase tracking-[0.3em] text-royal">Extended secretariat</p>
+            <h2 class="mt-2 font-serif text-3xl text-lagoon dark:text-white">Programme & advisory leads</h2>
+            <p class="mt-3 text-sm text-slate-600 dark:text-slate-300">
+                Specialists supporting gender inclusion, youth innovation, communications, delivery, and legal probity.
+            </p>
+        </div>
+
+        <div class="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {% for official in extended_officials %}
+            {% include "public/includes/official_card.html" with official=official large=False %}
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="rounded-3xl border border-white/50 bg-white/90 p-8 text-center backdrop-blur dark:border-white/10 dark:bg-white/5">
+        <h3 class="font-serif text-2xl text-lagoon dark:text-white">Engage leadership responsibly</h3>
+        <p class="mx-auto mt-3 max-w-xl text-sm text-slate-600 dark:text-slate-300">
+            For official correspondence, ward escalations, or media enquiries, call the secretariat:
+            <span class="mt-2 block font-semibold">{% include "includes/contact_phones.html" %}</span>
+        </p>
+        <div class="mt-6 flex flex-wrap justify-center gap-4">
+            <a href="{% url 'core:about' %}" class="rounded-full border border-lagoon/15 px-6 py-2.5 text-xs font-semibold uppercase tracking-wide text-lagoon hover:border-forest hover:text-forest dark:border-white/20 dark:text-white">About KKEF</a>
+            <a href="{% url 'core:donate_portal' %}" class="rounded-full bg-gradient-to-r from-forest to-royal px-6 py-2.5 text-xs font-semibold uppercase tracking-wide text-white shadow-lg">Partner with us</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

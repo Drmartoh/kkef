@@ -1,0 +1,83 @@
+<article
+    class="official-card group relative flex flex-col items-center rounded-3xl border border-white/50 bg-white/90 p-6 text-center shadow-lg shadow-lagoon/5 backdrop-blur transition hover:-translate-y-1 dark:border-white/10 dark:bg-white/5"
+    tabindex="0"
+    x-data="{ open: false }"
+    @click="if (window.matchMedia('(max-width: 767px)').matches) open = !open"
+    :class="open ? 'is-open' : ''"
+    @keydown.escape="open = false"
+>
+    <div class="relative mb-5">
+        <div class="avatar-ring overflow-hidden rounded-full ring-4 ring-forest/20 transition duration-300 {% if large %}h-36 w-36{% else %}h-28 w-28{% endif %}">
+            <img
+                src="{{ official.photo_url }}"
+                alt="Portrait of {{ official.name }}, {{ official.role }}"
+                width="256"
+                height="256"
+                class="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                loading="lazy"
+            >
+        </div>
+        <span class="absolute -bottom-1 -right-1 flex h-9 w-9 items-center justify-center rounded-full bg-forest text-white shadow-lg">
+            <i class="fa-solid fa-user-tie text-xs"></i>
+        </span>
+    </div>
+
+    <p class="text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-forest">{{ official.role }}</p>
+    <h3 class="mt-1 font-serif text-lg text-lagoon dark:text-white">{{ official.name }}</h3>
+    <p class="mt-1 text-xs font-medium text-gold">{{ official.tagline }}</p>
+
+    <p class="mt-4 text-left text-sm leading-relaxed text-slate-600 dark:text-slate-300 sm:text-center">
+        {{ official.bio }}
+    </p>
+
+    <p class="mt-3 text-[0.65rem] uppercase tracking-wider text-slate-400 group-hover:text-forest dark:group-hover:text-emerald-300">
+        <i class="fa-solid fa-hand-pointer mr-1"></i> Hover for full profile
+    </p>
+
+    <div
+        class="hover-panel pointer-events-none absolute inset-0 z-10 flex flex-col justify-end rounded-3xl bg-gradient-to-t from-lagoon via-lagoon/95 to-lagoon/70 p-5 text-left text-white opacity-0 transition duration-300"
+        role="tooltip"
+        :aria-hidden="!open"
+    >
+        <div class="mb-auto pt-2">
+            <p class="text-[0.65rem] uppercase tracking-[0.25em] text-emerald-300">Extended profile</p>
+            <h4 class="mt-1 font-serif text-xl">{{ official.name }}</h4>
+            <p class="text-sm text-emerald-100/90">{{ official.role }}</p>
+        </div>
+
+        <dl class="space-y-3 text-sm">
+            {% if official.tenure %}
+            <div>
+                <dt class="text-[0.65rem] uppercase tracking-wider text-emerald-300/80">Tenure</dt>
+                <dd class="text-slate-100">{{ official.tenure }}</dd>
+            </div>
+            {% endif %}
+            {% if official.focus_areas %}
+            <div>
+                <dt class="text-[0.65rem] uppercase tracking-wider text-emerald-300/80">Focus areas</dt>
+                <dd>
+                    <ul class="mt-1 flex flex-wrap gap-1.5">
+                        {% for item in official.focus_areas %}
+                        <li class="rounded-full bg-white/15 px-2.5 py-0.5 text-xs">{{ item }}</li>
+                        {% endfor %}
+                    </ul>
+                </dd>
+            </div>
+            {% endif %}
+            <div>
+                <dt class="text-[0.65rem] uppercase tracking-wider text-emerald-300/80">Contact</dt>
+                <dd class="space-y-1 font-medium text-gold">
+                    {% include "includes/contact_phones.html" %}
+                </dd>
+            </div>
+        </dl>
+
+        <button
+            type="button"
+            class="mt-4 w-full rounded-xl bg-white/10 py-2 text-xs uppercase tracking-wide md:hidden"
+            @click.stop="open = false"
+        >
+            Close
+        </button>
+    </div>
+</article>

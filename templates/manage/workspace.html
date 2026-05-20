@@ -1,0 +1,105 @@
+{% extends "manage/layout.html" %}
+{% block manage_title %}Workspace{% endblock %}
+
+{% block extra_head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js" defer></script>
+{{ manage_snapshot|json_script:"manage-snapshot-data" }}
+{% endblock %}
+
+{% block manage_content %}
+<div
+    x-show="toast"
+    x-transition
+    class="fixed bottom-6 right-6 z-[60] rounded-2xl bg-lagoon px-5 py-3 text-sm font-semibold text-white shadow-xl"
+    x-text="toast"
+></div>
+
+<!-- Overview -->
+<section x-show="module === 'overview'" x-cloak class="space-y-8">
+    <div class="flex flex-wrap items-center justify-between gap-4">
+        <div>
+            <h1 class="font-serif text-3xl text-lagoon dark:text-white">Mission control</h1>
+            <p class="text-sm text-slate-600 dark:text-slate-300">Live metrics · click inbox items to review</p>
+        </div>
+        <button type="button" @click="loadSnapshot()" class="rounded-full bg-forest px-4 py-2 text-xs font-semibold uppercase text-white">Refresh</button>
+    </div>
+    <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <article class="rounded-3xl border border-white/50 bg-white/90 p-5 dark:border-white/10 dark:bg-white/5">
+            <p class="text-xs uppercase text-slate-500">Inbox</p>
+            <p class="mt-2 font-serif text-4xl text-red-600" x-text="snapshot.kpis?.inbox_total ?? 0"></p>
+        </article>
+        <article class="rounded-3xl border border-white/50 bg-white/90 p-5 dark:border-white/10 dark:bg-white/5">
+            <p class="text-xs uppercase text-slate-500">Projects live</p>
+            <p class="mt-2 font-serif text-4xl text-forest" x-text="snapshot.kpis?.active_projects ?? 0"></p>
+        </article>
+        <article class="rounded-3xl border border-white/50 bg-white/90 p-5 dark:border-white/10 dark:bg-white/5">
+            <p class="text-xs uppercase text-slate-500">Groups</p>
+            <p class="mt-2 font-serif text-4xl text-lagoon dark:text-white" x-text="snapshot.kpis?.published_groups ?? 0"></p>
+        </article>
+        <article class="rounded-3xl border border-white/50 bg-white/90 p-5 dark:border-white/10 dark:bg-white/5">
+            <p class="text-xs uppercase text-slate-500">Giving KES</p>
+            <p class="mt-2 font-serif text-3xl text-gold" x-text="Number(snapshot.kpis?.verified_giving_kes||0).toLocaleString()"></p>
+        </article>
+    </div>
+    <div class="rounded-3xl border border-white/50 bg-white/90 p-6 dark:border-white/10 dark:bg-white/5">
+        <h2 class="font-semibold text-lagoon dark:text-white"><i class="fa-solid fa-inbox mr-2 text-forest"></i> Action inbox</h2>
+        <ul class="mt-4 space-y-2 max-h-80 overflow-y-auto">
+            <template x-for="item in snapshot.action_queue || []" :key="item.when + item.title">
+                <li>
+                    <button type="button" @click="openInbox(item)" class="flex w-full items-center gap-3 rounded-2xl border border-slate-100 p-3 text-left hover:border-forest/40 dark:border-white/10">
+                        <span class="text-xs font-semibold uppercase text-forest" x-text="item.label"></span>
+                        <span class="flex-1 truncate font-medium text-lagoon dark:text-white" x-text="item.title"></span>
+                        <span class="text-xs text-slate-400" x-text="item.meta"></span>
+                    </button>
+                </li>
+            </template>
+            <li x-show="!(snapshot.action_queue||[]).length" class="text-sm text-slate-500">Inbox clear.</li>
+        </ul>
+    </div>
+</section>
+
+<!-- CRUD modules -->
+<section x-show="module !== 'overview'" x-cloak class="space-y-6">
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+            <h1 class="font-serif text-3xl text-lagoon dark:text-white" x-text="moduleLabel(module)"></h1>
+            <p class="text-sm text-slate-500">Create · edit · publish · delete — no Django admin needed</p>
+        </div>
+        <div class="flex flex-wrap gap-2">
+            <input type="search" x-model="search" @keydown.enter="loadModule()" placeholder="Search…" class="rounded-full border border-slate-200 px-4 py-2 text-sm dark:border-white/20 dark:bg-white/5">
+            <button type="button" @click="loadModule()" class="rounded-full border px-4 py-2 text-xs font-semibold uppercase">Search</button>
+            <button type="button" x-show="canCreate()" @click="openCreate()" class="rounded-full bg-gradient-to-r from-forest to-royal px-5 py-2 text-xs font-semibold uppercase text-white shadow-lg">
+                <i class="fa-solid fa-plus mr-1"></i> Add new
+            </button>
+        </div>
+    </div>
+
+    <div x-show="loading" class="text-sm text-slate-500">Loading records…</div>
+
+    <div class="overflow-hidden rounded-3xl border border-white/50 bg-white/95 dark:border-white/10 dark:bg-white/5">
+        <table class="w-full text-left text-sm">
+            <thead class="border-b border-slate-100 bg-slate-50/80 text-xs uppercase tracking-wide text-slate-500 dark:border-white/10 dark:bg-white/5">
+                <tr>
+                    <th class="px-4 py-3">Record</th>
+                    <th class="px-4 py-3">Details</th>
+                    <th class="px-4 py-3 text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <template x-for="row in records" :key="row.id || row.certificate_number || row.reference">
+                    <tr class="border-b border-slate-50 hover:bg-forest/5 dark:border-white/5">
+                        <td class="px-4 py-3 font-semibold text-lagoon dark:text-white" x-text="rowTitle(row)"></td>
+                        <td class="px-4 py-3 text-slate-500" x-text="rowMeta(row)"></td>
+                        <td class="px-4 py-3 text-right">
+                            <button type="button" @click="openEdit(row)" class="mr-2 text-xs font-semibold uppercase text-forest hover:underline">Edit</button>
+                            <button type="button" x-show="module==='projects' && row.status!=='ongoing'" @click="publishRecord(row,'project')" class="mr-2 text-xs font-semibold uppercase text-royal hover:underline">Publish</button>
+                            <button type="button" x-show="module==='news' && row.status!=='published'" @click="publishRecord(row,'news')" class="text-xs font-semibold uppercase text-gold hover:underline">Publish</button>
+                        </td>
+                    </tr>
+                </template>
+            </tbody>
+        </table>
+        <p x-show="!loading && !records.length" class="p-8 text-center text-slate-500">No records yet. Click <strong>Add new</strong> to create one.</p>
+    </div>
+</section>
+{% endblock %}

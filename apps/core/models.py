@@ -14,6 +14,41 @@ class TimeStampedModel(models.Model):
         abstract = True
 
 
+class ForumOfficial(TimeStampedModel):
+    """Leadership roster — portraits and bios managed via Django admin."""
+
+    class Tier(models.TextChoices):
+        EXECUTIVE = "executive", "Executive board"
+        EXTENDED = "extended", "Extended secretariat"
+
+    tier = models.CharField(max_length=16, choices=Tier.choices, db_index=True)
+    name = models.CharField(max_length=160)
+    role = models.CharField(max_length=120)
+    tagline = models.CharField(max_length=200, blank=True)
+    bio = models.TextField()
+    tenure = models.CharField(max_length=200, blank=True)
+    focus_areas = models.JSONField(default=list, blank=True)
+    photo = models.ImageField(upload_to="officials/%Y/%m/", blank=True)
+    sort_order = models.PositiveSmallIntegerField(default=0)
+    is_published = models.BooleanField(default=True, db_index=True)
+
+    class Meta:
+        ordering = ["tier", "sort_order", "name"]
+        verbose_name = "forum official"
+        verbose_name_plural = "forum officials"
+
+    def __str__(self) -> str:
+        return f"{self.name} ({self.role})"
+
+    @property
+    def photo_url(self) -> str:
+        if self.photo:
+            return self.photo.url
+        from apps.core.officials import placeholder_avatar
+
+        return placeholder_avatar(self.name)
+
+
 class AuditLog(models.Model):
     """Structured audit trail for institutional transparency."""
 

@@ -50,6 +50,7 @@ router.register(r"notifications/inbox", NotificationViewSet, basename="notificat
 
 
 urlpatterns = [
+    path("manage/", include("apps.manage.urls")),
     path("", include(router.urls)),
     path("me/", MeRetrieveUpdateAPIView.as_view(), name="api-me"),
     path("analytics/tiles/", toolbox_views.TransparencyTilesAPI.as_view()),

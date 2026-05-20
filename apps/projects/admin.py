@@ -1,10 +1,15 @@
 from django.contrib import admin
 
-from .models import KanbanLane, KanbanMembership, Project, ProjectMilestone, ProjectStakeholder
+from .models import KanbanLane, KanbanMembership, Project, ProjectMedia, ProjectMilestone, ProjectStakeholder
 
 
 class ProjectMilestoneInline(admin.TabularInline):
     model = ProjectMilestone
+    extra = 0
+
+
+class ProjectMediaInline(admin.TabularInline):
+    model = ProjectMedia
     extra = 0
 
 
@@ -15,7 +20,7 @@ class ProjectAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("title",)}
     search_fields = ("title", "description", "location")
     autocomplete_fields = ("group", "steward")
-    inlines = [ProjectMilestoneInline]
+    inlines = [ProjectMilestoneInline, ProjectMediaInline]
 
 
 @admin.register(ProjectStakeholder)

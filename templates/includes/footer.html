@@ -15,6 +15,7 @@
         <div>
             <p class="text-xs uppercase tracking-[0.3em] text-forest dark:text-emerald-300">Quick links</p>
             <ul class="mt-4 space-y-2">
+                <li><a href="{% url 'core:officials' %}">Leadership & officials</a></li>
                 <li><a href="{% url 'core:projects_portal' %}">Projects</a></li>
                 <li><a href="{% url 'core:proposals_portal' %}">Proposal desk</a></li>
                 <li><a href="{% url 'core:media_portal' %}">Media center</a></li>
@@ -24,8 +25,10 @@
         <div>
             <p class="text-xs uppercase tracking-[0.3em] text-forest dark:text-emerald-300">Contacts</p>
             <ul class="mt-4 space-y-2">
-                <li><i class="fa-solid fa-phone mr-2 text-gold"></i> +254 700 000 000</li>
-                <li><i class="fa-solid fa-envelope mr-2 text-gold"></i> info@kkef.go.ke</li>
+                <li>
+                    <i class="fa-solid fa-phone mr-2 text-gold"></i>
+                    {% include "includes/contact_phones.html" %}
+                </li>
                 <li><i class="fa-solid fa-location-dot mr-2 text-gold"></i> Karai Ward, Kiambu County</li>
             </ul>
             <p class="mt-4 text-xs uppercase tracking-wide text-red-500">Emergency hotline: 999 / 112</p>

@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     "apps.media_center",
     "apps.notifications",
     "apps.integrations",
+    "apps.manage",
 ]
 
 MIDDLEWARE = [
@@ -86,6 +87,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "apps.core.context_processors.branding",
+                "apps.core.context_processors.site_contacts",
             ],
         },
     }
@@ -180,6 +182,10 @@ if env.bool("SECURE_SSL_REDIRECT", default=False):
 
 # Public context for templates
 PUBLIC_SITE_URL = env("PUBLIC_SITE_URL", default="http://127.0.0.1:8000")
+KKEF_CONTACT_PHONES = env.list(
+    "KKEF_CONTACT_PHONES",
+    default=["0720 463 430", "0726 622 206"],
+)
 GOOGLE_MAPS_API_KEY = env("GOOGLE_MAPS_API_KEY", default="")
 LEAFLET_TILE_URL = env("LEAFLET_TILE_URL", default="")
 DONATE_INBOX_EMAIL = env("DONATE_INBOX_EMAIL", default="donate@Kiambuempowermentforum.org")

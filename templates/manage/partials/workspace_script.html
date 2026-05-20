@@ -1,0 +1,366 @@
+<script>
+document.addEventListener('alpine:init', () => {
+  const API = {
+    meta: '/api/v1/manage/meta/',
+    officials: '/api/v1/manage/officials/',
+    projects: '/api/v1/manage/projects/',
+    projectMedia: '/api/v1/manage/project-media/',
+    projectMilestones: '/api/v1/manage/project-milestones/',
+    documents: '/api/v1/manage/documents/',
+    groups: '/api/v1/manage/groups/',
+    events: '/api/v1/manage/events/',
+    news: '/api/v1/manage/news/',
+    proposals: '/api/v1/manage/proposals/',
+    donor_intakes: '/api/v1/manage/donor-intakes/',
+    group_applications: '/api/v1/manage/group-applications/',
+    donations: '/api/v1/manage/donations/',
+    users: '/api/v1/manage/users/',
+    snapshot: '/api/v1/manage/snapshot/',
+  };
+
+  const MODULE_ENDPOINT = {
+    officials: API.officials,
+    projects: API.projects,
+    groups: API.groups,
+    events: API.events,
+    news: API.news,
+    proposals: API.proposals,
+    documents: API.documents,
+    donor_intakes: API.donor_intakes,
+    group_applications: API.group_applications,
+    donations: API.donations,
+    users: API.users,
+  };
+
+  const CREATABLE = new Set(['officials', 'projects', 'groups', 'events', 'news', 'documents']);
+  const READ_ONLY_MODULES = new Set(['donor_intakes', 'donations', 'users']);
+
+  Alpine.data('manageWorkspace', () => ({
+    module: 'overview',
+    meta: {},
+    snapshot: {},
+    records: [],
+    loading: false,
+    search: '',
+    editor: { open: false, mode: 'create', module: '', record: {}, files: {}, saving: false, error: '' },
+    projectMedia: [],
+    projectMilestones: [],
+    newMedia: { caption: '', tags: '', video_url: '' },
+    newMilestone: { title: '', narrative: '', baseline_date: '', target_date: '', sort_order: 0 },
+    toast: '',
+
+    async boot() {
+      await this.loadMeta();
+      const el = document.getElementById('manage-snapshot-data');
+      if (el) try { this.snapshot = JSON.parse(el.textContent); } catch (_) {}
+      await this.loadModule();
+    },
+
+    csrf() {
+      return document.querySelector('meta[name="csrf-token"]')?.content || '';
+    },
+
+    async api(url, options = {}) {
+      const headers = { Accept: 'application/json', 'X-CSRFToken': this.csrf(), ...(options.headers || {}) };
+      const res = await fetch(url, { credentials: 'same-origin', ...options, headers });
+      if (!res.ok) {
+        let detail = res.statusText;
+        try { const j = await res.json(); detail = j.detail || JSON.stringify(j); } catch (_) {}
+        throw new Error(detail);
+      }
+      if (res.status === 204) return null;
+      return res.json();
+    },
+
+    async loadMeta() {
+      this.meta = await this.api(API.meta);
+    },
+
+    async loadSnapshot() {
+      this.snapshot = await this.api(API.snapshot);
+    },
+
+    switchModule(mod) {
+      this.module = mod;
+      this.search = '';
+      this.loadModule();
+    },
+
+    async loadModule() {
+      if (this.module === 'overview') {
+        await this.loadSnapshot();
+        return;
+      }
+      const base = MODULE_ENDPOINT[this.module];
+      if (!base) return;
+      this.loading = true;
+      try {
+        let url = base;
+        if (this.search) url += `?search=${encodeURIComponent(this.search)}`;
+        const data = await this.api(url);
+        this.records = Array.isArray(data) ? data : (data.results || []);
+      } catch (e) {
+        this.notify(e.message);
+        this.records = [];
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    moduleLabel(mod) {
+      const map = {
+        overview: 'Overview', projects: 'Projects', officials: 'Officials', groups: 'Groups',
+        events: 'Events', news: 'News', proposals: 'Proposals', documents: 'Documents',
+        donor_intakes: 'Donor inbox',
+        group_applications: 'Group applications', donations: 'Donations', users: 'Users',
+      };
+      return map[mod] || mod;
+    },
+
+    canCreate() { return CREATABLE.has(this.module); },
+
+    defaultRecord(mod) {
+      const bases = {
+        officials: { tier: 'executive', name: '', role: '', tagline: '', bio: '', tenure: '', focus_areas_text: '', sort_order: 0, is_published: true },
+        projects: { title: '', status: 'pending', description: '', intervention_tags_text: '', sdg_goals_text: '', progress_percentage: 0, budget_total: 0, funding_secured: 0, group: '' },
+        groups: { name: '', group_type: 'cbo', ward: '', summary: '', thematic_focus_tags_text: '', is_published: true, is_featured: false },
+        events: { title: '', summary: '', start_at: '', end_at: '', venue_descriptor: '', is_public: true },
+        news: { title: '', summary: '', body: '', status: 'draft', tags_csv: '' },
+        documents: { title: '', doc_type: 'other', visibility: 'public', version_label: 'v1', project: '', group: '', confidentiality_note: '' },
+        proposals: { status: 'under_review' },
+        donor_intakes: { staff_notes: '' },
+        group_applications: { status: 'pending', secretariat_notes: '' },
+        donations: { status: 'pending', ledger_note: '' },
+        users: { role: 'member', is_active: true },
+      };
+      return JSON.parse(JSON.stringify(bases[mod] || {}));
+    },
+
+    openCreate() {
+      this.editor = { open: true, mode: 'create', module: this.module, record: this.defaultRecord(this.module), files: {}, saving: false, error: '' };
+      this.projectMedia = [];
+      this.projectMilestones = [];
+      this.resetNewMilestone();
+    },
+
+    async openEdit(record) {
+      const rec = { ...record };
+      if (this.module === 'events') {
+        if (rec.start_at) rec.start_at = String(rec.start_at).slice(0, 16);
+        if (rec.end_at) rec.end_at = String(rec.end_at).slice(0, 16);
+      }
+      if (rec.group === null) rec.group = '';
+      this.editor = { open: true, mode: 'edit', module: this.module, record: rec, files: {}, saving: false, error: '' };
+      if (this.module === 'projects' && record.id) {
+        await Promise.all([
+          this.loadProjectMedia(record.id),
+          this.loadProjectMilestones(record.id),
+        ]);
+      } else {
+        this.projectMilestones = [];
+      }
+    },
+
+    resetNewMilestone() {
+      this.newMilestone = { title: '', narrative: '', baseline_date: '', target_date: '', sort_order: this.projectMilestones.length };
+    },
+
+    openInbox(item) {
+      this.switchModule(item.module);
+      const found = this.records.find(r => String(r.id || r.certificate_number) === String(item.id));
+      if (found) this.openEdit(found);
+      else this.$nextTick(() => {
+        const f = this.records.find(r => String(r.id || r.certificate_number) === String(item.id));
+        if (f) this.openEdit(f);
+      });
+    },
+
+    closeEditor() {
+      this.editor.open = false;
+      this.editor.error = '';
+    },
+
+    setFile(ev, field) {
+      const file = ev.target.files?.[0];
+      if (file) this.editor.files[field] = file;
+    },
+
+    recordPk(rec) {
+      return rec.certificate_number || rec.id;
+    },
+
+    buildFormData() {
+      const fd = new FormData();
+      const rec = this.editor.record;
+      Object.entries(rec).forEach(([k, v]) => {
+        if (['media_items', 'milestones', 'cover_image_url', 'hero_image_url', 'logo_url', 'photo_url', 'group_name'].includes(k)) return;
+        if (v === null || v === undefined || v === '') return;
+        if (typeof v === 'object') fd.append(k, JSON.stringify(v));
+        else fd.append(k, v);
+      });
+      Object.entries(this.editor.files).forEach(([k, file]) => fd.append(k, file));
+      return fd;
+    },
+
+    async saveEditor() {
+      this.editor.saving = true;
+      this.editor.error = '';
+      try {
+        const base = MODULE_ENDPOINT[this.editor.module];
+        const fd = this.buildFormData();
+        const pk = this.recordPk(this.editor.record);
+        let url = base;
+        let method = 'POST';
+        if (this.editor.mode === 'edit') {
+          url = `${base}${pk}/`;
+          method = 'PATCH';
+        }
+        await this.api(url, { method, body: fd });
+        this.notify('Saved successfully');
+        this.closeEditor();
+        await this.loadModule();
+        if (this.module === 'overview') await this.loadSnapshot();
+      } catch (e) {
+        this.editor.error = e.message;
+      } finally {
+        this.editor.saving = false;
+      }
+    },
+
+    async deleteRecord() {
+      if (!confirm('Delete this record permanently?')) return;
+      try {
+        const base = MODULE_ENDPOINT[this.editor.module];
+        const pk = this.recordPk(this.editor.record);
+        await this.api(`${base}${pk}/`, { method: 'DELETE' });
+        this.notify('Deleted');
+        this.closeEditor();
+        await this.loadModule();
+      } catch (e) {
+        this.editor.error = e.message;
+      }
+    },
+
+    async publishRecord(record, type) {
+      try {
+        const url = `${API.projects}${record.id}/publish/`;
+        if (type === 'news') await this.api(`${API.news}${record.id}/publish/`, { method: 'POST' });
+        else await this.api(url, { method: 'POST' });
+        this.notify('Published');
+        await this.loadModule();
+      } catch (e) { this.notify(e.message); }
+    },
+
+    async loadProjectMedia(projectId) {
+      const data = await this.api(`${API.projectMedia}?project=${projectId}`);
+      this.projectMedia = Array.isArray(data) ? data : (data.results || []);
+    },
+
+    async uploadProjectPhoto(ev) {
+      const file = ev.target.files?.[0];
+      if (!file || !this.editor.record.id) return;
+      const fd = new FormData();
+      fd.append('project', this.editor.record.id);
+      fd.append('media_type', 'photo');
+      fd.append('image', file);
+      fd.append('caption', this.newMedia.caption || '');
+      fd.append('tags', this.newMedia.tags || '');
+      await this.api(API.projectMedia, { method: 'POST', body: fd });
+      this.newMedia = { caption: '', tags: '', video_url: '' };
+      await this.loadProjectMedia(this.editor.record.id);
+      this.notify('Photo added');
+    },
+
+    async uploadProjectVideo() {
+      if (!this.editor.record.id || !this.newMedia.video_url) return;
+      const fd = new FormData();
+      fd.append('project', this.editor.record.id);
+      fd.append('media_type', 'video');
+      fd.append('video_url', this.newMedia.video_url);
+      fd.append('caption', this.newMedia.caption || '');
+      await this.api(API.projectMedia, { method: 'POST', body: fd });
+      this.newMedia = { caption: '', tags: '', video_url: '' };
+      await this.loadProjectMedia(this.editor.record.id);
+      this.notify('Video added');
+    },
+
+    async deleteMedia(id) {
+      if (!confirm('Remove this media item?')) return;
+      await this.api(`${API.projectMedia}${id}/`, { method: 'DELETE' });
+      await this.loadProjectMedia(this.editor.record.id);
+    },
+
+    async loadProjectMilestones(projectId) {
+      const data = await this.api(`${API.projectMilestones}?project=${projectId}`);
+      this.projectMilestones = (Array.isArray(data) ? data : (data.results || [])).map((ms) => ({
+        ...ms,
+        baseline_date: ms.baseline_date || '',
+        target_date: ms.target_date || '',
+        completed_date: ms.completed_date || '',
+      }));
+      this.resetNewMilestone();
+    },
+
+    async addMilestone() {
+      if (!this.editor.record.id || !this.newMilestone.title?.trim()) {
+        this.notify('Enter a milestone title');
+        return;
+      }
+      const fd = new FormData();
+      fd.append('project', this.editor.record.id);
+      fd.append('title', this.newMilestone.title);
+      fd.append('narrative', this.newMilestone.narrative || '');
+      fd.append('sort_order', this.newMilestone.sort_order || 0);
+      if (this.newMilestone.baseline_date) fd.append('baseline_date', this.newMilestone.baseline_date);
+      if (this.newMilestone.target_date) fd.append('target_date', this.newMilestone.target_date);
+      await this.api(API.projectMilestones, { method: 'POST', body: fd });
+      this.resetNewMilestone();
+      await this.loadProjectMilestones(this.editor.record.id);
+      this.notify('Milestone added');
+    },
+
+    async saveMilestone(ms) {
+      const fd = new FormData();
+      fd.append('project', this.editor.record.id);
+      fd.append('title', ms.title || '');
+      fd.append('narrative', ms.narrative || '');
+      fd.append('sort_order', ms.sort_order ?? 0);
+      fd.append('baseline_date', ms.baseline_date || '');
+      fd.append('target_date', ms.target_date || '');
+      fd.append('completed_date', ms.completed_date || '');
+      await this.api(`${API.projectMilestones}${ms.id}/`, { method: 'PATCH', body: fd });
+      await this.loadProjectMilestones(this.editor.record.id);
+      this.notify('Milestone saved');
+    },
+
+    async deleteMilestone(id) {
+      if (!confirm('Remove this milestone?')) return;
+      await this.api(`${API.projectMilestones}${id}/`, { method: 'DELETE' });
+      await this.loadProjectMilestones(this.editor.record.id);
+      this.notify('Milestone removed');
+    },
+
+    toggleMilestoneComplete(ms) {
+      ms.completed_date = ms.completed_date ? '' : new Date().toISOString().slice(0, 10);
+    },
+
+    rowTitle(r) {
+      return r.title || r.name || r.group_name || r.display_name || r.reference || r.username || r.certificate_number || '—';
+    },
+
+    rowMeta(r) {
+      if (this.module === 'projects') return `${r.status} · ${r.intervention_tags_text || r.intervention_tags || ''}`;
+      if (this.module === 'officials') return r.role;
+      if (this.module === 'news') return r.status;
+      if (this.module === 'group_applications') return r.status;
+      if (this.module === 'documents') return `${r.doc_type} · ${r.visibility}${r.project_title ? ' · ' + r.project_title : ''}`;
+      return r.status || r.kind || r.role || '';
+    },
+
+    notify(msg) {
+      this.toast = msg;
+      setTimeout(() => { this.toast = ''; }, 3500);
+    },
+  }));
+});
+</script>

@@ -80,7 +80,7 @@
                 <a href="{% url 'core:donate_portal' %}#join-group" class="rounded-full bg-white px-6 py-3 text-sm font-semibold text-lagoon shadow-lg shadow-black/40">Join forum</a>
                 <a href="{% url 'core:proposals_portal' %}" class="rounded-full border border-white/50 px-6 py-3 text-sm font-semibold text-white hover:bg-white/10">Submit project</a>
                 <a href="{% url 'core:donate_portal' %}" class="rounded-full bg-gradient-to-r from-gold via-forest to-royal px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-gold/30">Donate</a>
-                <a href="mailto:partnerships@kkef.go.ke" class="rounded-full border border-white/30 px-6 py-3 text-sm font-semibold text-white/80 hover:text-white">Become partner</a>
+                <a href="tel:{% if KKEF_PHONES %}{{ KKEF_PHONES.0.tel }}{% endif %}" class="rounded-full border border-white/30 px-6 py-3 text-sm font-semibold text-white/80 hover:text-white">Call secretariat</a>
             </div>
         </div>
         <div class="w-full lg:w-2/5" x-data="heroTicker()">

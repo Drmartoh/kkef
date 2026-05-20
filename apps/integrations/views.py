@@ -10,6 +10,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from apps.accounts.permissions import IsForumAdminOrAbove
+from apps.core.manage_dashboard import build_manage_snapshot
 from apps.integrations.analytics import executive_pulse, public_transparency_cards
 from apps.integrations.serializers_exports import ProposalExportPayloadSerializer
 
@@ -36,6 +37,15 @@ class ExecutiveObservatoryAPI(APIView):
 
     def get(self, request):  # noqa: ARG002
         return Response(executive_pulse())
+
+
+class ManageSnapshotAPI(APIView):
+    """Live JSON for the interactive control center (auto-refresh)."""
+
+    permission_classes = [permissions.IsAuthenticated, IsForumAdminOrAbove]
+
+    def get(self, request):  # noqa: ARG002
+        return Response(build_manage_snapshot())
 
 
 class ProposalPdfExportStub(APIView):

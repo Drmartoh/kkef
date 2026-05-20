@@ -1,0 +1,248 @@
+<div
+    x-show="editor.open"
+    x-cloak
+    class="fixed inset-0 z-50 flex justify-end"
+    @keydown.escape.window="closeEditor()"
+>
+    <div class="absolute inset-0 bg-lagoon/60 backdrop-blur-sm" @click="closeEditor()"></div>
+    <div
+        class="relative flex h-full w-full flex-col overflow-hidden bg-white shadow-2xl dark:bg-[#0c1220]"
+        :class="editor.module === 'projects' ? 'max-w-3xl' : 'max-w-2xl'"
+        x-transition
+    >
+        <header class="flex items-center justify-between border-b border-slate-200 px-6 py-4 dark:border-white/10">
+            <div>
+                <p class="text-xs uppercase tracking-[0.25em] text-forest" x-text="editor.mode === 'create' ? 'Create' : 'Edit'"></p>
+                <h2 class="font-serif text-xl text-lagoon dark:text-white" x-text="moduleLabel(editor.module)"></h2>
+            </div>
+            <button type="button" @click="closeEditor()" class="rounded-full p-2 hover:bg-slate-100 dark:hover:bg-white/10">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </header>
+
+        <form class="flex-1 overflow-y-auto px-6 py-5 space-y-4" @submit.prevent="saveEditor()">
+            <template x-if="editor.module === 'projects'">
+                <div class="space-y-4">
+                    <div><label class="field-label">Title *</label><input x-model="editor.record.title" class="field-input" required></div>
+                    <div class="grid gap-4 sm:grid-cols-2">
+                        <div><label class="field-label">Status</label><select x-model="editor.record.status" class="field-input"><template x-for="o in meta.project_statuses" :key="o.value"><option :value="o.value" x-text="o.label"></option></template></select></div>
+                        <div><label class="field-label">Group</label><select x-model="editor.record.group" class="field-input"><option value="">— None —</option><template x-for="g in meta.groups" :key="g.id"><option :value="g.id" x-text="g.name"></option></template></select></div>
+                    </div>
+                    <div><label class="field-label">Short description</label><textarea x-model="editor.record.description" class="field-input" rows="3"></textarea></div>
+                    <div><label class="field-label">Problem statement</label><textarea x-model="editor.record.problem_statement" class="field-input" rows="2"></textarea></div>
+                    <div><label class="field-label">Anticipated outcomes</label><textarea x-model="editor.record.anticipated_outcomes" class="field-input" rows="2"></textarea></div>
+                    <div class="grid gap-4 sm:grid-cols-2">
+                        <div><label class="field-label">Tags (comma-separated)</label><input x-model="editor.record.intervention_tags_text" class="field-input" placeholder="water, youth, trees"></div>
+                        <div><label class="field-label">SDGs (comma-separated)</label><input x-model="editor.record.sdg_goals_text" class="field-input" placeholder="6, 13, 15"></div>
+                    </div>
+                    <div class="grid gap-4 sm:grid-cols-2">
+                        <div><label class="field-label">Start date</label><input type="date" x-model="editor.record.timeline_start" class="field-input"></div>
+                        <div><label class="field-label">End date</label><input type="date" x-model="editor.record.timeline_end" class="field-input"></div>
+                    </div>
+                    <div class="grid gap-4 sm:grid-cols-2">
+                        <div><label class="field-label">Location</label><input x-model="editor.record.location" class="field-input"></div>
+                        <div><label class="field-label">Wards served</label><input x-model="editor.record.wards_served" class="field-input"></div>
+                    </div>
+                    <div class="grid gap-4 sm:grid-cols-3">
+                        <div><label class="field-label">Budget (KES)</label><input type="number" x-model="editor.record.budget_total" class="field-input"></div>
+                        <div><label class="field-label">Secured (KES)</label><input type="number" x-model="editor.record.funding_secured" class="field-input"></div>
+                        <div><label class="field-label">Progress %</label><input type="number" min="0" max="100" x-model="editor.record.progress_percentage" class="field-input"></div>
+                    </div>
+                    <div><label class="field-label">Spotlight video URL</label><input type="url" x-model="editor.record.spotlight_video_url" class="field-input" placeholder="https://youtube.com/..."></div>
+                    <div><label class="field-label">Cover image</label><input type="file" accept="image/*" @change="setFile($event, 'cover_image')" class="field-input"></div>
+                    <template x-if="editor.mode === 'edit' && editor.record.id">
+                        <div class="rounded-2xl border border-dashed border-forest/30 bg-forest/5 p-4 dark:border-white/10 dark:bg-white/5">
+                            <p class="text-sm font-semibold text-lagoon dark:text-white">Project gallery</p>
+                            <div class="mt-3 grid grid-cols-3 gap-2" x-show="projectMedia.length">
+                                <template x-for="m in projectMedia" :key="m.id">
+                                    <div class="relative overflow-hidden rounded-xl">
+                                        <img :src="m.image_url || ''" class="h-20 w-full object-cover" alt="">
+                                        <button type="button" @click="deleteMedia(m.id)" class="absolute right-1 top-1 rounded bg-red-600 px-1.5 py-0.5 text-[0.6rem] text-white">×</button>
+                                    </div>
+                                </template>
+                            </div>
+                            <div class="mt-3 grid gap-2 sm:grid-cols-2">
+                                <input type="file" accept="image/*" @change="uploadProjectPhoto($event)" class="field-input text-xs">
+                                <input type="url" x-model="newMedia.video_url" class="field-input text-xs" placeholder="Or paste video URL">
+                            </div>
+                            <input x-model="newMedia.caption" class="field-input mt-2 text-xs" placeholder="Caption">
+                            <input x-model="newMedia.tags" class="field-input mt-2 text-xs" placeholder="Tags (comma-separated)">
+                            <button type="button" @click="uploadProjectVideo()" class="mt-2 text-xs font-semibold text-forest" x-show="newMedia.video_url">Add video link</button>
+                        </div>
+                        <div class="rounded-2xl border border-dashed border-royal/30 bg-royal/5 p-4 dark:border-white/10 dark:bg-white/5">
+                            <div class="flex items-center justify-between gap-2">
+                                <p class="text-sm font-semibold text-lagoon dark:text-white"><i class="fa-solid fa-flag-checkered mr-1 text-royal"></i> Milestones</p>
+                                <span class="text-xs text-slate-500" x-text="projectMilestones.length + ' items'"></span>
+                            </div>
+                            <ul class="mt-3 space-y-3 max-h-64 overflow-y-auto">
+                                <template x-for="ms in projectMilestones" :key="ms.id">
+                                    <li class="rounded-xl border border-slate-100 bg-white p-3 dark:border-white/10 dark:bg-lagoon/40">
+                                        <div class="grid gap-2 sm:grid-cols-2">
+                                            <input x-model="ms.title" class="field-input text-xs sm:col-span-2" placeholder="Milestone title">
+                                            <input type="date" x-model="ms.baseline_date" class="field-input text-xs" placeholder="Start">
+                                            <input type="date" x-model="ms.target_date" class="field-input text-xs" placeholder="Target">
+                                        </div>
+                                        <textarea x-model="ms.narrative" class="field-input mt-2 text-xs" rows="2" placeholder="Narrative / evidence notes"></textarea>
+                                        <div class="mt-2 flex flex-wrap items-center gap-2">
+                                            <input type="number" x-model="ms.sort_order" class="field-input w-16 text-xs" title="Order">
+                                            <label class="flex items-center gap-1 text-xs">
+                                                <input type="checkbox" :checked="!!ms.completed_date" @change="toggleMilestoneComplete(ms)" class="rounded text-forest">
+                                                Completed
+                                            </label>
+                                            <button type="button" @click="saveMilestone(ms)" class="text-xs font-semibold text-forest">Save</button>
+                                            <button type="button" @click="deleteMilestone(ms.id)" class="text-xs font-semibold text-red-600">Remove</button>
+                                        </div>
+                                    </li>
+                                </template>
+                                <li x-show="!projectMilestones.length" class="text-xs text-slate-500">No milestones yet.</li>
+                            </ul>
+                            <div class="mt-4 rounded-xl border border-slate-200 bg-slate-50/80 p-3 dark:border-white/10 dark:bg-white/5">
+                                <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Add milestone</p>
+                                <input x-model="newMilestone.title" class="field-input mt-2 text-xs" placeholder="Title *">
+                                <div class="mt-2 grid gap-2 sm:grid-cols-2">
+                                    <input type="date" x-model="newMilestone.baseline_date" class="field-input text-xs">
+                                    <input type="date" x-model="newMilestone.target_date" class="field-input text-xs">
+                                </div>
+                                <textarea x-model="newMilestone.narrative" class="field-input mt-2 text-xs" rows="2" placeholder="Description"></textarea>
+                                <button type="button" @click="addMilestone()" class="mt-2 w-full rounded-xl bg-royal/90 py-2 text-xs font-semibold uppercase text-white">Add milestone</button>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </template>
+
+            <template x-if="editor.module === 'officials'">
+                <div class="space-y-4">
+                    <div class="grid gap-4 sm:grid-cols-2">
+                        <div><label class="field-label">Tier</label><select x-model="editor.record.tier" class="field-input"><template x-for="o in meta.official_tiers" :key="o.value"><option :value="o.value" x-text="o.label"></option></template></select></div>
+                        <div><label class="field-label">Sort order</label><input type="number" x-model="editor.record.sort_order" class="field-input"></div>
+                    </div>
+                    <div><label class="field-label">Full name *</label><input x-model="editor.record.name" class="field-input" required></div>
+                    <div><label class="field-label">Role *</label><input x-model="editor.record.role" class="field-input" required></div>
+                    <div><label class="field-label">Tagline</label><input x-model="editor.record.tagline" class="field-input"></div>
+                    <div><label class="field-label">Bio</label><textarea x-model="editor.record.bio" class="field-input" rows="4"></textarea></div>
+                    <div><label class="field-label">Tenure</label><input x-model="editor.record.tenure" class="field-input"></div>
+                    <div><label class="field-label">Focus areas (comma-separated)</label><input x-model="editor.record.focus_areas_text" class="field-input"></div>
+                    <div><label class="field-label">Portrait photo</label><input type="file" accept="image/*" @change="setFile($event, 'photo')" class="field-input"></div>
+                    <label class="flex items-center gap-2 text-sm"><input type="checkbox" x-model="editor.record.is_published" class="rounded text-forest"> Published on officials page</label>
+                </div>
+            </template>
+
+            <template x-if="editor.module === 'groups'">
+                <div class="space-y-4">
+                    <div><label class="field-label">Name *</label><input x-model="editor.record.name" class="field-input" required></div>
+                    <div class="grid gap-4 sm:grid-cols-2">
+                        <div><label class="field-label">Type</label><select x-model="editor.record.group_type" class="field-input"><template x-for="o in meta.group_types" :key="o.value"><option :value="o.value" x-text="o.label"></option></template></select></div>
+                        <div><label class="field-label">Ward</label><select x-model="editor.record.ward" class="field-input"><option value="">—</option><template x-for="o in meta.wards" :key="o.value"><option :value="o.value" x-text="o.label"></option></template></select></div>
+                    </div>
+                    <div><label class="field-label">Summary</label><textarea x-model="editor.record.summary" class="field-input" rows="3"></textarea></div>
+                    <div><label class="field-label">Tags</label><input x-model="editor.record.thematic_focus_tags_text" class="field-input"></div>
+                    <div><label class="field-label">Logo</label><input type="file" accept="image/*" @change="setFile($event, 'logo')" class="field-input"></div>
+                    <label class="flex items-center gap-2 text-sm"><input type="checkbox" x-model="editor.record.is_published" class="rounded text-forest"> Published</label>
+                    <label class="flex items-center gap-2 text-sm"><input type="checkbox" x-model="editor.record.is_featured" class="rounded text-forest"> Featured</label>
+                </div>
+            </template>
+
+            <template x-if="editor.module === 'events'">
+                <div class="space-y-4">
+                    <div><label class="field-label">Title *</label><input x-model="editor.record.title" class="field-input" required></div>
+                    <div><label class="field-label">Summary</label><textarea x-model="editor.record.summary" class="field-input" rows="2"></textarea></div>
+                    <div class="grid gap-4 sm:grid-cols-2">
+                        <div><label class="field-label">Starts</label><input type="datetime-local" x-model="editor.record.start_at" class="field-input"></div>
+                        <div><label class="field-label">Ends</label><input type="datetime-local" x-model="editor.record.end_at" class="field-input"></div>
+                    </div>
+                    <div><label class="field-label">Venue</label><input x-model="editor.record.venue_descriptor" class="field-input"></div>
+                    <div><label class="field-label">Cover image</label><input type="file" accept="image/*" @change="setFile($event, 'hero_image')" class="field-input"></div>
+                    <label class="flex items-center gap-2 text-sm"><input type="checkbox" x-model="editor.record.is_public" class="rounded text-forest"> Public event</label>
+                </div>
+            </template>
+
+            <template x-if="editor.module === 'news'">
+                <div class="space-y-4">
+                    <div><label class="field-label">Headline *</label><input x-model="editor.record.title" class="field-input" required></div>
+                    <div><label class="field-label">Status</label><select x-model="editor.record.status" class="field-input"><template x-for="o in meta.news_statuses" :key="o.value"><option :value="o.value" x-text="o.label"></option></template></select></div>
+                    <div><label class="field-label">Summary</label><textarea x-model="editor.record.summary" class="field-input" rows="2"></textarea></div>
+                    <div><label class="field-label">Body</label><textarea x-model="editor.record.body" class="field-input" rows="6"></textarea></div>
+                    <div><label class="field-label">Tags</label><input x-model="editor.record.tags_csv" class="field-input"></div>
+                    <div><label class="field-label">Hero image</label><input type="file" accept="image/*" @change="setFile($event, 'hero_image')" class="field-input"></div>
+                </div>
+            </template>
+
+            <template x-if="editor.module === 'proposals'">
+                <div class="space-y-4">
+                    <div><label class="field-label">Title</label><input x-model="editor.record.title" class="field-input"></div>
+                    <div class="grid gap-4 sm:grid-cols-2">
+                        <div><label class="field-label">Status</label><select x-model="editor.record.status" class="field-input"><template x-for="o in meta.proposal_statuses" :key="o.value"><option :value="o.value" x-text="o.label"></option></template></select></div>
+                        <div><label class="field-label">Budget (KES)</label><input type="number" x-model="editor.record.projected_budget" class="field-input"></div>
+                    </div>
+                    <div><label class="field-label">Synopsis</label><textarea x-model="editor.record.synopsis" class="field-input" rows="4"></textarea></div>
+                </div>
+            </template>
+
+            <template x-if="editor.module === 'documents'">
+                <div class="space-y-4">
+                    <div><label class="field-label">Title *</label><input x-model="editor.record.title" class="field-input" required></div>
+                    <div class="grid gap-4 sm:grid-cols-2">
+                        <div><label class="field-label">Document type</label><select x-model="editor.record.doc_type" class="field-input"><template x-for="o in meta.document_types" :key="o.value"><option :value="o.value" x-text="o.label"></option></template></select></div>
+                        <div><label class="field-label">Visibility</label><select x-model="editor.record.visibility" class="field-input"><template x-for="o in meta.document_visibility" :key="o.value"><option :value="o.value" x-text="o.label"></option></template></select></div>
+                    </div>
+                    <div class="grid gap-4 sm:grid-cols-2">
+                        <div><label class="field-label">Linked project</label><select x-model="editor.record.project" class="field-input"><option value="">— None —</option><template x-for="p in meta.projects" :key="p.id"><option :value="p.id" x-text="p.title"></option></template></select></div>
+                        <div><label class="field-label">Linked group</label><select x-model="editor.record.group" class="field-input"><option value="">— None —</option><template x-for="g in meta.groups" :key="g.id"><option :value="g.id" x-text="g.name"></option></template></select></div>
+                    </div>
+                    <div><label class="field-label">Version</label><input x-model="editor.record.version_label" class="field-input" placeholder="v1"></div>
+                    <div><label class="field-label">Confidentiality note</label><textarea x-model="editor.record.confidentiality_note" class="field-input" rows="2"></textarea></div>
+                    <div><label class="field-label">File upload</label><input type="file" @change="setFile($event, 'file')" class="field-input" :required="editor.mode === 'create'"></div>
+                    <p x-show="editor.record.file_url" class="text-xs"><a :href="editor.record.file_url" target="_blank" rel="noopener" class="font-semibold text-forest hover:underline">View current file</a></p>
+                </div>
+            </template>
+
+            <template x-if="editor.module === 'donor_intakes'">
+                <div class="space-y-4">
+                    <p class="text-sm text-slate-500" x-text="'Ref: ' + (editor.record.reference || '')"></p>
+                    <div><label class="field-label">Staff notes</label><textarea x-model="editor.record.staff_notes" class="field-input" rows="4"></textarea></div>
+                </div>
+            </template>
+
+            <template x-if="editor.module === 'group_applications'">
+                <div class="space-y-4">
+                    <p class="text-sm font-semibold" x-text="editor.record.group_name"></p>
+                    <div><label class="field-label">Status</label><select x-model="editor.record.status" class="field-input"><template x-for="o in meta.group_application_statuses" :key="o.value"><option :value="o.value" x-text="o.label"></option></template></select></div>
+                    <div><label class="field-label">Secretariat notes</label><textarea x-model="editor.record.secretariat_notes" class="field-input" rows="4"></textarea></div>
+                </div>
+            </template>
+
+            <template x-if="editor.module === 'donations'">
+                <div class="space-y-4">
+                    <div><label class="field-label">Status</label><select x-model="editor.record.status" class="field-input"><template x-for="o in meta.donation_statuses" :key="o.value"><option :value="o.value" x-text="o.label"></option></template></select></div>
+                    <div><label class="field-label">Ledger note</label><textarea x-model="editor.record.ledger_note" class="field-input" rows="3"></textarea></div>
+                </div>
+            </template>
+
+            <template x-if="editor.module === 'users'">
+                <div class="space-y-4">
+                    <div><label class="field-label">Username</label><input x-model="editor.record.username" class="field-input" readonly></div>
+                    <div><label class="field-label">Email</label><input x-model="editor.record.email" class="field-input"></div>
+                    <div><label class="field-label">Role</label><select x-model="editor.record.role" class="field-input"><option value="member">Member</option><option value="group_leader">Group leader</option><option value="forum_admin">Forum admin</option><option value="donor">Donor</option><option value="stakeholder">Stakeholder</option><option value="super_admin">Super admin</option></select></div>
+                    <label class="flex items-center gap-2 text-sm"><input type="checkbox" x-model="editor.record.is_active" class="rounded text-forest"> Active</label>
+                </div>
+            </template>
+
+            <p x-show="editor.error" class="text-sm text-red-600" x-text="editor.error"></p>
+
+            <footer class="sticky bottom-0 flex gap-3 border-t border-slate-200 bg-white py-4 dark:border-white/10 dark:bg-[#0c1220]">
+                <button type="submit" class="flex-1 rounded-2xl bg-gradient-to-r from-forest to-royal py-3 text-xs font-semibold uppercase tracking-wide text-white" :disabled="editor.saving">
+                    <span x-text="editor.saving ? 'Saving…' : 'Save'"></span>
+                </button>
+                <button type="button" @click="closeEditor()" class="rounded-2xl border px-4 py-3 text-xs font-semibold uppercase">Cancel</button>
+                <button type="button" x-show="editor.mode === 'edit'" @click="deleteRecord()" class="rounded-2xl border border-red-200 px-4 py-3 text-xs font-semibold uppercase text-red-600">Delete</button>
+            </footer>
+        </form>
+    </div>
+</div>
+
+<style>
+  .field-label { display:block; font-size:0.7rem; font-weight:600; text-transform:uppercase; letter-spacing:0.08em; color:#64748b; margin-bottom:0.35rem; }
+  .field-input { width:100%; border-radius:1rem; border:1px solid rgba(15,23,42,0.12); padding:0.65rem 0.9rem; font-size:0.875rem; }
+  .dark .field-input { background:rgba(255,255,255,0.05); border-color:rgba(255,255,255,0.12); color:#f1f5f9; }
+</style>
