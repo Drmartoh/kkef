@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Group registry · KKEF{% endblock %}
+{% block content %}
+<section class="mx-auto max-w-6xl px-4 py-16 space-y-8">
+    <div>
+        <p class="text-xs uppercase tracking-[0.3em] text-forest">Governance</p>
+        <h1 class="font-serif text-3xl text-lagoon dark:text-white">Multi-group registry</h1>
+        <p class="mt-2 max-w-2xl text-sm text-slate-600 dark:text-slate-300">Published CBOs, SACCOs, and thematic clusters across Kiambu-Karai wards.</p>
+    </div>
+
+    {% include "includes/portal_sign_in_banner.html" %}
+
+    <div class="rounded-3xl border border-forest/30 bg-forest/5 p-6 dark:border-white/10 dark:bg-white/5">
+        <p class="font-semibold text-lagoon dark:text-white">Is your group new to the forum?</p>
+        <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">Submit an official application with your certificate number and ward.</p>
+        <a href="{% url 'core:donate_portal' %}#join-group" class="mt-4 inline-flex rounded-full bg-forest px-5 py-2 text-xs font-semibold uppercase tracking-wide text-white">Apply to join KKEF</a>
+    </div>
+
+    {% if groups %}
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {% for group in groups %}
+        <article class="rounded-3xl border border-white/50 bg-white/90 p-5 shadow-sm backdrop-blur dark:border-white/10 dark:bg-white/5">
+            <p class="text-xs uppercase tracking-wide text-forest">{{ group.get_group_type_display }}</p>
+            <h2 class="mt-2 font-serif text-lg text-lagoon dark:text-white">{{ group.name }}</h2>
+            {% if group.ward %}
+            <p class="mt-1 text-xs text-slate-500 dark:text-slate-400"><i class="fa-solid fa-location-dot mr-1 text-gold"></i>{{ group.ward }} ward</p>
+            {% endif %}
+            <p class="mt-3 text-sm text-slate-600 line-clamp-3 dark:text-slate-300">{{ group.summary|default:"Community group registered with KKEF." }}</p>
+            {% if group.thematic_focus_tags %}
+            <p class="mt-3 text-xs text-royal">{{ group.thematic_focus_tags }}</p>
+            {% endif %}
+        </article>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="text-sm text-slate-500">No published groups yet. Check back after the next seed cycle.</p>
+    {% endif %}
+</section>
+{% endblock %}

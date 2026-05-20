@@ -1,0 +1,43 @@
+<footer class="mt-24 border-t border-white/40 bg-white/70 py-14 text-sm text-slate-600 backdrop-blur-xl dark:border-white/10 dark:bg-lagoon/70 dark:text-slate-200">
+    <div class="mx-auto grid max-w-7xl gap-10 px-4 md:grid-cols-4">
+        <div>
+            <p class="font-serif text-xl text-lagoon dark:text-white">KKEF</p>
+            <p class="mt-3 leading-relaxed">
+                Coordinating wards, SACCOs, watershed stewards, and dignitaries through one audit-ready empowerment fabric.
+            </p>
+            <div class="mt-4 flex gap-3 text-lagoon dark:text-white">
+                <a aria-label="Facebook" href="#" class="hover:text-gold"><i class="fa-brands fa-facebook"></i></a>
+                <a aria-label="X" href="#" class="hover:text-gold"><i class="fa-brands fa-x-twitter"></i></a>
+                <a aria-label="YouTube" href="#" class="hover:text-gold"><i class="fa-brands fa-youtube"></i></a>
+                <a aria-label="LinkedIn" href="#" class="hover:text-gold"><i class="fa-brands fa-linkedin"></i></a>
+            </div>
+        </div>
+        <div>
+            <p class="text-xs uppercase tracking-[0.3em] text-forest dark:text-emerald-300">Quick links</p>
+            <ul class="mt-4 space-y-2">
+                <li><a href="{% url 'core:projects_portal' %}">Projects</a></li>
+                <li><a href="{% url 'core:proposals_portal' %}">Proposal desk</a></li>
+                <li><a href="{% url 'core:media_portal' %}">Media center</a></li>
+                <li><a href="{% url 'core:community_portal' %}">Community lab</a></li>
+            </ul>
+        </div>
+        <div>
+            <p class="text-xs uppercase tracking-[0.3em] text-forest dark:text-emerald-300">Contacts</p>
+            <ul class="mt-4 space-y-2">
+                <li><i class="fa-solid fa-phone mr-2 text-gold"></i> +254 700 000 000</li>
+                <li><i class="fa-solid fa-envelope mr-2 text-gold"></i> info@kkef.go.ke</li>
+                <li><i class="fa-solid fa-location-dot mr-2 text-gold"></i> Karai Ward, Kiambu County</li>
+            </ul>
+            <p class="mt-4 text-xs uppercase tracking-wide text-red-500">Emergency hotline: 999 / 112</p>
+        </div>
+        <div>
+            <p class="text-xs uppercase tracking-[0.3em] text-forest dark:text-emerald-300">Newsletter</p>
+            <form class="mt-4 space-y-3" onsubmit="event.preventDefault(); alert('Connect your CRM / Mailchimp endpoint here.');">
+                <label class="text-xs font-semibold text-lagoon dark:text-slate-100" for="newsletter-email">Institutional email</label>
+                <input id="newsletter-email" type="email" class="w-full rounded-2xl border border-lagoon/10 bg-white/80 px-4 py-3 text-sm text-lagoon shadow-inner focus:border-forest focus:outline-none dark:border-white/10 dark:bg-white/5 dark:text-white" placeholder="you@organization.org">
+                <button class="w-full rounded-2xl bg-gradient-to-r from-forest to-royal py-3 text-xs font-semibold uppercase tracking-wide text-white">Subscribe</button>
+            </form>
+        </div>
+    </div>
+    <p class="mt-10 text-center text-xs text-slate-400">© {% now "Y" %} Kiambu-Karai Empowerment Forum · Crafted for transparency, resilience, and youth futures.</p>
+</footer>

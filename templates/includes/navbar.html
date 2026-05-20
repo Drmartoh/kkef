@@ -1,0 +1,133 @@
+{% load static %}
+<header class="sticky top-0 z-40 border-b border-white/40 bg-white/70 backdrop-blur-xl dark:bg-lagoon/70 dark:border-white/10" x-data="{ open: false, programmes: false }">
+    <div class="mx-auto flex max-w-7xl items-center gap-8 px-4 py-4">
+        <a href="/" class="flex flex-1 items-center gap-3">
+            <span class="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-forest to-royal shadow-lg shadow-forest/30">
+                <i class="fa-solid fa-people-roof text-lg text-white"></i>
+            </span>
+            <div>
+                <p class="font-serif text-lg font-semibold text-lagoon dark:text-white">KKEF</p>
+                <p class="text-xs uppercase tracking-[0.38em] text-slate-500 dark:text-slate-300">Empowerment Forum</p>
+            </div>
+        </a>
+
+        <nav class="hidden flex-1 items-center justify-center gap-6 text-sm font-medium text-lagoon/80 dark:text-slate-200 lg:flex">
+            <a class="transition hover:text-forest" href="{% url 'core:home' %}">Home</a>
+            <a class="transition hover:text-forest" href="{% url 'core:about' %}">About</a>
+            <a class="transition hover:text-forest" href="{% url 'core:impact' %}">Impact</a>
+
+            <div
+                class="relative"
+                @mouseenter="programmes = true"
+                @mouseleave="programmes = false"
+                @keydown.escape.window="programmes = false"
+            >
+                <button
+                    type="button"
+                    class="flex items-center gap-1 text-lagoon/80 transition hover:text-forest dark:text-slate-200"
+                    :class="programmes ? 'text-forest' : ''"
+                    @click="programmes = !programmes"
+                    :aria-expanded="programmes"
+                    aria-haspopup="true"
+                    aria-controls="programmes-mega-menu"
+                >
+                    Programs
+                    <i class="fa-solid fa-chevron-down text-xs transition" :class="programmes ? 'rotate-180' : ''"></i>
+                </button>
+
+                <div
+                    id="programmes-mega-menu"
+                    x-show="programmes"
+                    x-transition
+                    x-cloak
+                    @click.outside="programmes = false"
+                    class="absolute left-1/2 top-full z-50 w-[min(720px,calc(100vw-2rem))] -translate-x-1/2 pt-3"
+                >
+                    <div class="rounded-3xl border border-white/40 bg-white/95 p-6 text-left shadow-2xl shadow-lagoon/10 backdrop-blur-2xl dark:border-white/10 dark:bg-lagoon/95">
+                        <div class="grid gap-4 md:grid-cols-3">
+                            <div class="space-y-2 rounded-2xl bg-forest/5 p-4 dark:bg-white/5">
+                                <p class="text-xs uppercase tracking-wide text-forest">Field operations</p>
+                                <a class="block text-sm font-semibold hover:text-forest" href="{% url 'core:projects_portal' %}">Project command</a>
+                                <a class="block text-sm text-slate-600 hover:text-forest dark:text-slate-300" href="{% url 'core:proposals_portal' %}">Proposal studio</a>
+                                <a class="block text-sm text-slate-600 hover:text-forest dark:text-slate-300" href="{% url 'core:events_portal' %}">Events cloud</a>
+                            </div>
+                            <div class="space-y-2 rounded-2xl bg-royal/5 p-4 dark:bg-white/5">
+                                <p class="text-xs uppercase tracking-wide text-royal">Governance &amp; groups</p>
+                                <a class="block text-sm font-semibold hover:text-forest" href="{% url 'core:groups_portal' %}">Browse groups</a>
+                                <a class="block text-sm font-semibold text-forest hover:underline dark:text-emerald-300" href="{% url 'core:donate_portal' %}#join-group">Apply to join forum</a>
+                                <p class="text-xs leading-snug text-slate-500 dark:text-slate-400">Registered groups: certificate &amp; ward application</p>
+                                <a class="block text-sm text-slate-600 hover:text-forest dark:text-slate-300" href="{% url 'core:analytics_portal' %}">Analytics observatory</a>
+                                <a class="block text-sm text-slate-600 hover:text-forest dark:text-slate-300" href="/admin/">Secure admin</a>
+                            </div>
+                            <div class="space-y-2 rounded-2xl bg-gold/10 p-4 dark:bg-white/5">
+                                <p class="text-xs uppercase tracking-wide text-gold">Partners</p>
+                                <a class="block text-sm font-semibold hover:text-forest" href="{% url 'core:donate_portal' %}">Donor lounge</a>
+                                <a class="block text-sm text-slate-600 hover:text-forest dark:text-slate-300" href="{% url 'core:media_portal' %}">Media bureau</a>
+                                <a class="block text-sm text-slate-600 hover:text-forest dark:text-slate-300" href="{% url 'core:community_portal' %}">Community commons</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <a class="transition hover:text-forest" href="{% url 'core:maps_portal' %}">GIS maps</a>
+            <a class="transition hover:text-forest" href="{% url 'core:search' %}">Search</a>
+        </nav>
+
+        <div class="hidden flex-none items-center gap-4 lg:flex">
+            <button type="button" class="rounded-full border border-lagoon/10 px-3 py-2 text-xs font-semibold uppercase tracking-wide text-lagoon dark:border-white/20 dark:text-white" @click="$store.theme.toggle()">
+                <span x-text="$store.theme.dark ? 'Light mode' : 'Dark mode'"></span>
+            </button>
+            {% if user.is_authenticated %}
+                <a href="{% url 'core:dashboard' %}" class="rounded-full bg-lagoon px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white shadow-inner shadow-black/40">Mission deck</a>
+                <form method="post" action="{% url 'accounts:logout' %}" class="inline">
+                    {% csrf_token %}
+                    <button type="submit" class="cursor-pointer border-0 bg-transparent p-0 text-xs font-semibold uppercase tracking-wide text-slate-500 hover:text-forest dark:text-slate-400 dark:hover:text-white">Sign out</button>
+                </form>
+            {% else %}
+                <a href="{% url 'accounts:login' %}" class="text-xs font-semibold uppercase tracking-wide text-slate-500 hover:text-forest">Forum login</a>
+                <a href="{% url 'core:donate_portal' %}#join-group" class="rounded-full bg-gradient-to-r from-forest via-forest to-gold px-5 py-2 text-xs font-semibold uppercase tracking-wide text-white shadow-lg shadow-gold/30">Join forum</a>
+            {% endif %}
+        </div>
+
+        <button class="lg:hidden rounded-2xl border border-lagoon/10 p-3 text-sm dark:border-white/20" @click="open = !open" :aria-expanded="open">
+            <i class="fa-solid" :class="open ? 'fa-xmark' : 'fa-bars'"></i>
+        </button>
+    </div>
+
+    <div x-show="open" x-transition x-cloak class="border-t border-white/30 bg-white/95 px-4 py-5 text-sm dark:border-white/10 dark:bg-lagoon/95 lg:hidden">
+        <div class="flex flex-col gap-3 font-semibold text-lagoon dark:text-white">
+            <a href="{% url 'core:home' %}">Home</a>
+            <a href="{% url 'core:about' %}">About</a>
+            <a href="{% url 'core:impact' %}">Impact</a>
+
+            <div class="rounded-2xl border border-forest/20 bg-forest/5 p-4 dark:border-white/10 dark:bg-white/5">
+                <p class="text-xs uppercase tracking-[0.25em] text-forest dark:text-emerald-300">Programs</p>
+                <div class="mt-3 space-y-2 text-sm font-medium">
+                    <a href="{% url 'core:projects_portal' %}">Project command</a>
+                    <a href="{% url 'core:proposals_portal' %}">Proposal studio</a>
+                    <a href="{% url 'core:events_portal' %}">Events cloud</a>
+                    <a href="{% url 'core:groups_portal' %}">Browse groups</a>
+                    <a href="{% url 'core:analytics_portal' %}">Analytics observatory</a>
+                    <a href="{% url 'core:media_portal' %}">Media bureau</a>
+                    <a href="{% url 'core:community_portal' %}">Community commons</a>
+                </div>
+            </div>
+
+            <a href="{% url 'core:maps_portal' %}">GIS maps</a>
+            <a href="{% url 'core:search' %}">Search</a>
+            <a href="{% url 'core:donate_portal' %}">Give</a>
+            <a href="{% url 'core:donate_portal' %}#join-group" class="text-forest dark:text-emerald-300">Apply to join forum</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'core:dashboard' %}">Dashboard</a>
+                <form method="post" action="{% url 'accounts:logout' %}" class="mt-1">
+                    {% csrf_token %}
+                    <button type="submit" class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2 text-left text-xs font-semibold uppercase tracking-wide text-lagoon dark:border-white/20 dark:bg-white/10 dark:text-white">Sign out</button>
+                </form>
+            {% else %}
+                <a href="{% url 'accounts:login' %}">Login</a>
+            {% endif %}
+            <button class="rounded-2xl border border-dashed border-forest px-4 py-2 text-left text-xs uppercase" @click="$store.theme.toggle()">Toggle night vision</button>
+        </div>
+    </div>
+</header>

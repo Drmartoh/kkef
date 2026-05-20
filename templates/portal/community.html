@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Community lab · KKEF{% endblock %}
+{% block content %}
+<section class="mx-auto max-w-6xl px-4 py-16 space-y-8">
+    <div>
+        <p class="text-xs uppercase tracking-[0.3em] text-forest">Participation</p>
+        <h1 class="font-serif text-3xl text-lagoon dark:text-white">Community commons</h1>
+        <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">Forums, polls, and feedback loops — sign in to join discussions.</p>
+    </div>
+
+    {% include "includes/portal_sign_in_banner.html" %}
+
+    {% if forums %}
+    <div class="grid gap-4 md:grid-cols-2">
+        {% for forum in forums %}
+        <article class="rounded-3xl border border-white/50 bg-white/90 p-5 dark:border-white/10 dark:bg-white/5">
+            <h2 class="font-serif text-lg text-lagoon dark:text-white">{{ forum.name }}</h2>
+            {% if forum.synopsis %}
+            <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">{{ forum.synopsis|truncatewords:24 }}</p>
+            {% endif %}
+        </article>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="text-sm text-slate-500">Community forums will be listed here as they are configured.</p>
+    {% endif %}
+</section>
+{% endblock %}

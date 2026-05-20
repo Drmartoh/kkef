@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Donor observatory · KKEF{% endblock %}
+{% block content %}
+<section class="mx-auto max-w-5xl px-4 py-16 space-y-6">
+    <h1 class="font-serif text-3xl text-lagoon dark:text-white">Donor observatory</h1>
+    <p class="text-sm text-slate-600 dark:text-slate-300">Surface fund allocation, leaderboard projects, and rollup tiles via `/api/v1/funding/donations/rollup/` with optional filters for anonymous transparency.</p>
+    <div class="rounded-3xl border border-white/40 bg-white/90 p-6 backdrop-blur dark:border-white/10 dark:bg-white/5 space-y-4">
+        <div>
+            <p class="text-xs uppercase tracking-[0.3em] text-forest">Live ledger pull</p>
+            <pre id="rollup" class="mt-3 overflow-x-auto rounded-2xl bg-slate-950/90 p-4 text-xs text-emerald-100">Loading rollup…</pre>
+        </div>
+        <a class="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-forest to-gold px-5 py-2 text-xs font-semibold uppercase tracking-wide text-white" href="{% url 'core:donate_portal' %}">Launch giving UI</a>
+    </div>
+</section>
+{% endblock %}
+{% block extra_scripts %}
+<script>
+  window.addEventListener('load', async () => {
+    const target = document.getElementById('rollup');
+    try {
+      const res = await fetch('/api/v1/funding/donations/rollup/');
+      const data = await res.json();
+      target.textContent = JSON.stringify(data, null, 2);
+    } catch (error) {
+      target.textContent = 'Unable to load rollup: ' + error;
+    }
+  });
+</script>
+{% endblock %}

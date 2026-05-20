@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Events cloud · KKEF{% endblock %}
+{% block content %}
+<section class="mx-auto max-w-6xl px-4 py-16 space-y-8">
+    <div>
+        <p class="text-xs uppercase tracking-[0.3em] text-forest">Engagement</p>
+        <h1 class="font-serif text-3xl text-lagoon dark:text-white">QR-ready events desk</h1>
+        <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">Upcoming forums, clean-ups, and county convenings open to the public.</p>
+    </div>
+
+    {% include "includes/portal_sign_in_banner.html" %}
+
+    {% if events %}
+    <div class="grid gap-4 md:grid-cols-2">
+        {% for event in events %}
+        <article class="rounded-3xl border border-white/50 bg-white/90 p-6 dark:border-white/10 dark:bg-white/5">
+            <p class="text-xs uppercase tracking-wide text-gold">{{ event.thematic_track|default:"Community event" }}</p>
+            <h2 class="mt-2 font-serif text-xl text-lagoon dark:text-white">{{ event.title }}</h2>
+            <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">{{ event.summary|truncatewords:28 }}</p>
+            <ul class="mt-4 space-y-1 text-xs text-slate-500 dark:text-slate-400">
+                <li><i class="fa-regular fa-calendar mr-2 text-forest"></i>{{ event.start_at|date:"D, j M Y · H:i" }}</li>
+                {% if event.venue_descriptor %}
+                <li><i class="fa-solid fa-location-dot mr-2 text-forest"></i>{{ event.venue_descriptor }}</li>
+                {% endif %}
+            </ul>
+            {% if user.is_authenticated %}
+            <p class="mt-4 text-xs text-forest">RSVP via your mission deck or the events API.</p>
+            {% endif %}
+        </article>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="rounded-3xl border border-dashed border-slate-200 p-8 text-center text-sm text-slate-500 dark:border-white/20">No upcoming public events scheduled. Watch this space for ward convenings.</p>
+    {% endif %}
+</section>
+{% endblock %}

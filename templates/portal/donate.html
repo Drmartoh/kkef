@@ -1,0 +1,224 @@
+{% extends "base.html" %}
+{% block title %}Give & partner · Kiambu Empowerment Forum{% endblock %}
+{% block content %}
+<section class="mx-auto max-w-5xl px-4 py-12 space-y-14" x-data="{ donorTab: '{% if donor_form.kind.value %}{{ donor_form.kind.value }}{% else %}money{% endif %}' }">
+    <header class="text-center space-y-4">
+        <p class="text-xs uppercase tracking-[0.35em] text-forest">Give · Share · Join</p>
+        <h1 class="font-serif text-4xl text-lagoon dark:text-white md:text-5xl">Support KKEF in one seamless flow</h1>
+        <p class="mx-auto max-w-2xl text-slate-600 dark:text-slate-300">
+            Contribute funds, offer sports gear, farm inputs, trees, and more—or send a letter or proposal.
+            Prefer email? Write us directly at
+            <a class="font-semibold text-forest underline decoration-gold/60 hover:text-royal" href="mailto:{{ DONATE_INBOX_EMAIL }}">{{ DONATE_INBOX_EMAIL }}</a>.
+        </p>
+    </header>
+
+    {% if messages %}
+        <div class="mx-auto max-w-3xl space-y-3">
+            {% for message in messages %}
+                <div class="rounded-2xl border px-5 py-4 text-sm shadow-lg backdrop-blur {% if message.tags == 'success' %}border-forest/40 bg-forest/10 text-lagoon dark:text-white{% elif message.tags == 'error' %}border-red-300 bg-red-50 text-red-900 dark:border-red-500/40 dark:bg-red-950/40 dark:text-red-100{% elif message.tags == 'warning' %}border-gold/50 bg-gold/10 text-lagoon dark:text-amber-100{% else %}border-white/40 bg-white/90 dark:bg-white/10 dark:text-white{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Donor intake -->
+    <div id="give" class="rounded-[36px] border border-white/50 bg-white/90 p-6 shadow-2xl shadow-lagoon/10 backdrop-blur-xl dark:border-white/10 dark:bg-[#0c1525]/90 md:p-10">
+        <div class="flex flex-col gap-2 border-b border-slate-200 pb-6 dark:border-white/10 md:flex-row md:items-end md:justify-between">
+            <div>
+                <h2 class="font-serif text-2xl text-lagoon dark:text-white">Make a contribution</h2>
+                <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">Choose how you would like to help. One short form—no account required.</p>
+            </div>
+        </div>
+
+        <form method="post" enctype="multipart/form-data" class="mt-8 space-y-8">
+            {% csrf_token %}
+            <input type="hidden" name="donor_intake_submit" value="1">
+
+            <div class="space-y-3">
+                <p class="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">I want to</p>
+                <div
+                    class="grid gap-3 sm:grid-cols-3"
+                    @change="if ($event.target && $event.target.name === 'kind') donorTab = $event.target.value"
+                >
+                    {% for radio in donor_form.kind %}
+                        <label class="flex cursor-pointer items-start gap-3 rounded-2xl border border-slate-200 p-4 transition hover:border-forest/50 has-[:checked]:border-forest has-[:checked]:bg-forest/5 dark:border-white/10 dark:has-[:checked]:bg-white/10" for="{{ radio.id_for_label }}">
+                            {{ radio.tag }}
+                            <span class="text-sm font-medium text-lagoon dark:text-white">{{ radio.choice_label }}</span>
+                        </label>
+                    {% endfor %}
+                </div>
+                {% if donor_form.kind.errors %}<p class="text-sm text-red-600">{{ donor_form.kind.errors.0 }}</p>{% endif %}
+            </div>
+
+            <!-- Money -->
+            <div x-show="donorTab === 'money'" x-transition class="space-y-4 rounded-2xl bg-slate-50/80 p-6 dark:bg-white/5">
+                <p class="text-sm font-semibold text-forest">Financial gift</p>
+                <div class="grid gap-4 md:grid-cols-2">
+                    <div>
+                        <label class="text-xs font-semibold text-slate-600 dark:text-slate-300" for="id_amount">Amount (KES)</label>
+                        {{ donor_form.amount }}
+                        {% if donor_form.amount.errors %}<p class="mt-1 text-sm text-red-600">{{ donor_form.amount.errors.0 }}</p>{% endif %}
+                    </div>
+                    <div>
+                        <label class="text-xs font-semibold text-slate-600 dark:text-slate-300" for="id_currency">Currency</label>
+                        {{ donor_form.currency }}
+                    </div>
+                </div>
+                <div>
+                    <label class="text-xs font-semibold text-slate-600 dark:text-slate-300" for="id_payment_preference">How would you like to pay?</label>
+                    {{ donor_form.payment_preference }}
+                    <p class="mt-1 text-xs text-slate-500">M-Pesa, bank, card, or “contact me”—our finance desk will guide you.</p>
+                </div>
+            </div>
+
+            <!-- Resources -->
+            <div x-show="donorTab === 'resources'" x-transition class="space-y-4 rounded-2xl bg-slate-50/80 p-6 dark:bg-white/5">
+                <p class="text-sm font-semibold text-forest">In-kind resources</p>
+                <div>
+                    <label class="text-xs font-semibold text-slate-600 dark:text-slate-300" for="id_resource_category">Focus area</label>
+                    {{ donor_form.resource_category }}
+                    {% if donor_form.resource_category.errors %}<p class="mt-1 text-sm text-red-600">{{ donor_form.resource_category.errors.0 }}</p>{% endif %}
+                </div>
+                <div>
+                    <label class="text-xs font-semibold text-slate-600 dark:text-slate-300" for="id_resource_description">Describe what you are donating</label>
+                    {{ donor_form.resource_description }}
+                    {% if donor_form.resource_description.errors %}<p class="mt-1 text-sm text-red-600">{{ donor_form.resource_description.errors.0 }}</p>{% endif %}
+                </div>
+                <div>
+                    <label class="text-xs font-semibold text-slate-600 dark:text-slate-300" for="id_quantity_or_estimate">Quantity, size, or logistics</label>
+                    {{ donor_form.quantity_or_estimate }}
+                </div>
+            </div>
+
+            <!-- Letter / proposal -->
+            <div x-show="donorTab === 'message'" x-transition class="space-y-4 rounded-2xl bg-slate-50/80 p-6 dark:bg-white/5">
+                <p class="text-sm font-semibold text-forest">Letter, proposal, or inquiry</p>
+                <p class="text-xs text-slate-600 dark:text-slate-400">Attach a PDF or Word document if your full proposal is on file.</p>
+                <div>
+                    <label class="text-xs font-semibold text-slate-600 dark:text-slate-300" for="id_message_subject">Subject (optional)</label>
+                    {{ donor_form.message_subject }}
+                </div>
+                <div>
+                    <label class="text-xs font-semibold text-slate-600 dark:text-slate-300" for="id_message_body">Your message</label>
+                    {{ donor_form.message_body }}
+                    {% if donor_form.message_body.errors %}<p class="mt-1 text-sm text-red-600">{{ donor_form.message_body.errors.0 }}</p>{% endif %}
+                </div>
+                <div>
+                    <label class="text-xs font-semibold text-slate-600 dark:text-slate-300" for="id_attachment">Attachment (optional)</label>
+                    {{ donor_form.attachment }}
+                    {% if donor_form.attachment.errors %}<p class="mt-1 text-sm text-red-600">{{ donor_form.attachment.errors.0 }}</p>{% endif %}
+                    <p class="mt-1 text-xs text-slate-500">PDF, Word, or plain text — max 10&nbsp;MB recommended.</p>
+                </div>
+            </div>
+
+            <!-- Contact + privacy -->
+            <div class="grid gap-6 border-t border-slate-200 pt-8 dark:border-white/10 md:grid-cols-2">
+                <div class="space-y-4">
+                    <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Your details</p>
+                    <div>
+                        <label class="text-xs font-semibold text-slate-600 dark:text-slate-300" for="id_display_name">Full name</label>
+                        {{ donor_form.display_name }}
+                        {% if donor_form.display_name.errors %}<p class="mt-1 text-sm text-red-600">{{ donor_form.display_name.errors.0 }}</p>{% endif %}
+                    </div>
+                    <div>
+                        <label class="text-xs font-semibold text-slate-600 dark:text-slate-300" for="id_email">Email</label>
+                        {{ donor_form.email }}
+                        {% if donor_form.email.errors %}<p class="mt-1 text-sm text-red-600">{{ donor_form.email.errors.0 }}</p>{% endif %}
+                    </div>
+                    <div>
+                        <label class="text-xs font-semibold text-slate-600 dark:text-slate-300" for="id_phone">Phone (optional)</label>
+                        {{ donor_form.phone }}
+                    </div>
+                </div>
+                <div class="space-y-4 rounded-2xl border border-dashed border-forest/30 bg-forest/5 p-5 dark:border-white/20 dark:bg-white/5">
+                    <label class="flex cursor-pointer items-start gap-3 text-sm text-lagoon dark:text-slate-200">
+                        {{ donor_form.anonymous }}
+                        <span><strong class="text-forest dark:text-gold">Give anonymously</strong> — your name will not appear on public honour rolls. We may still contact you privately about logistics.</span>
+                    </label>
+                    {% if donor_form.anonymous.errors %}<p class="text-sm text-red-600">{{ donor_form.anonymous.errors.0 }}</p>{% endif %}
+                    <label class="flex cursor-pointer items-start gap-3 text-sm text-lagoon dark:text-slate-200">
+                        {{ donor_form.agree_contact }}
+                        <span>I agree that KKEF may contact me to complete this submission.</span>
+                    </label>
+                    {% if donor_form.agree_contact.errors %}<p class="text-sm text-red-600">{{ donor_form.agree_contact.errors.0 }}</p>{% endif %}
+                </div>
+            </div>
+
+            {% if donor_form.non_field_errors %}
+                <div class="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-800 dark:border-red-500/30 dark:bg-red-950/30 dark:text-red-100">
+                    {{ donor_form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <div class="flex flex-wrap items-center gap-4">
+                <button type="submit" class="rounded-full bg-gradient-to-r from-forest via-forest to-royal px-8 py-3 text-sm font-semibold uppercase tracking-wide text-white shadow-lg shadow-forest/30">Submit securely</button>
+                <a href="mailto:{{ DONATE_INBOX_EMAIL }}?subject=KKEF%20donor%20inquiry" class="text-sm font-semibold text-royal hover:text-forest dark:text-gold">Open email instead</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Group application -->
+    <div id="join-group" class="rounded-[36px] border border-gold/40 bg-gradient-to-br from-white via-white to-gold/10 p-6 shadow-2xl dark:from-[#0c1525] dark:via-[#0c1525] dark:to-gold/10 md:p-10">
+        <div class="max-w-3xl space-y-2">
+            <p class="text-xs uppercase tracking-[0.3em] text-gold">Registered groups</p>
+            <h2 class="font-serif text-3xl text-lagoon dark:text-white">Apply for your group to join the forum</h2>
+            <p class="text-sm text-slate-600 dark:text-slate-300">
+                Use your official certificate or registration number. Each number may only be submitted once.
+                All <strong>60 Kiambu wards</strong> are listed—please select yours.
+            </p>
+        </div>
+
+        <form method="post" class="mt-8 grid gap-6 md:grid-cols-2">
+            {% csrf_token %}
+            <input type="hidden" name="group_application_submit" value="1">
+
+            <div class="md:col-span-2">
+                <label class="text-xs font-semibold text-slate-600 dark:text-slate-300" for="id_group_name">Group name (as registered)</label>
+                {{ group_form.group_name }}
+                {% if group_form.group_name.errors %}<p class="mt-1 text-sm text-red-600">{{ group_form.group_name.errors.0 }}</p>{% endif %}
+            </div>
+            <div>
+                <label class="text-xs font-semibold text-slate-600 dark:text-slate-300" for="id_certificate_number">Certificate / registration number</label>
+                {{ group_form.certificate_number }}
+                {% if group_form.certificate_number.errors %}<p class="mt-1 text-sm text-red-600">{{ group_form.certificate_number.errors.0 }}</p>{% endif %}
+            </div>
+            <div>
+                <label class="text-xs font-semibold text-slate-600 dark:text-slate-300" for="id_phone">Phone number</label>
+                {{ group_form.phone }}
+                {% if group_form.phone.errors %}<p class="mt-1 text-sm text-red-600">{{ group_form.phone.errors.0 }}</p>{% endif %}
+            </div>
+            <div>
+                <label class="text-xs font-semibold text-slate-600 dark:text-slate-300" for="id_chairperson_name">Chairperson / contact person</label>
+                {{ group_form.chairperson_name }}
+                {% if group_form.chairperson_name.errors %}<p class="mt-1 text-sm text-red-600">{{ group_form.chairperson_name.errors.0 }}</p>{% endif %}
+            </div>
+            <div>
+                <label class="text-xs font-semibold text-slate-600 dark:text-slate-300" for="id_group_type">Group type</label>
+                {{ group_form.group_type }}
+                {% if group_form.group_type.errors %}<p class="mt-1 text-sm text-red-600">{{ group_form.group_type.errors.0 }}</p>{% endif %}
+            </div>
+            <div class="md:col-span-2">
+                <label class="text-xs font-semibold text-slate-600 dark:text-slate-300" for="id_ward">Ward (Kiambu County) — required</label>
+                {{ group_form.ward }}
+                {% if group_form.ward.errors %}<p class="mt-1 text-sm text-red-600">{{ group_form.ward.errors.0 }}</p>{% endif %}
+            </div>
+            <div class="md:col-span-2">
+                <label class="text-xs font-semibold text-slate-600 dark:text-slate-300" for="id_contact_email">Contact email (optional)</label>
+                {{ group_form.contact_email }}
+            </div>
+
+            {% if group_form.non_field_errors %}
+                <div class="md:col-span-2 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-800 dark:border-red-500/30 dark:bg-red-950/30 dark:text-red-100">
+                    {{ group_form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <div class="md:col-span-2 flex flex-wrap gap-4">
+                <button type="submit" class="rounded-full bg-lagoon px-8 py-3 text-sm font-semibold uppercase tracking-wide text-white shadow-lg">Submit application</button>
+                <p class="self-center text-xs text-slate-500 dark:text-slate-400">Questions? {{ DONATE_INBOX_EMAIL }}</p>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}

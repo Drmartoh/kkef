@@ -1,0 +1,302 @@
+{% extends "base.html" %}
+{% block title %}KKEF · Kiambu-Karai Empowerment Forum{% endblock %}
+
+{% block extra_head %}
+<script>
+  document.addEventListener('alpine:init', () => {
+    Alpine.data('heroTicker', () => ({
+      active: 0,
+      slides: [
+        {
+          kicker: 'GIS + giving',
+          title: 'Every ward narrated on a live map',
+          copy: 'Leaflet + Google Maps layers visualise projects, tree cover, and clean-up routes with county overlays.'
+        },
+        {
+          kicker: 'AI copilots',
+          title: 'Proposal drafting in minutes',
+          copy: 'Forum assistants auto-structure SDG indicators, risk registers, and budget phasing with human review gates.'
+        },
+        {
+          kicker: 'Realtime comms',
+          title: 'Channels-powered notifications',
+          copy: 'Websocket fan-out keeps leaders, donors, and members aligned with SMS + email fallbacks.'
+        }
+      ],
+      rotate() {
+        this.active = (this.active + 1) % this.slides.length;
+      },
+      init() {
+        setInterval(() => this.rotate(), 7000);
+      }
+    }));
+
+    Alpine.data('counterTiles', (groups, projects, beneficiaries, trees) => ({
+      groups: 0,
+      projects: 0,
+      beneficiaries: 0,
+      trees: 0,
+      targets: { groups, projects, beneficiaries, trees },
+      animate() {
+        const duration = 1400;
+        const start = performance.now();
+        const tick = (now) => {
+          const progress = Math.min((now - start) / duration, 1);
+          this.groups = this.targets.groups * progress;
+          this.projects = this.targets.projects * progress;
+          this.beneficiaries = this.targets.beneficiaries * progress;
+          this.trees = this.targets.trees * progress;
+          if (progress < 1) requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
+      }
+    }));
+  });
+</script>
+{% endblock %}
+
+{% block hero %}
+<section class="relative overflow-hidden">
+    <div class="absolute inset-0">
+        <video class="h-full w-full object-cover opacity-40 dark:opacity-30" autoplay muted loop playsinline poster="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1600&q=80">
+            <source src="https://cdn.coverr.co/videos/coverr-aerial-view-of-lush-green-forest-3624/1080p.mp4" type="video/mp4">
+        </video>
+        <div class="absolute inset-0 bg-gradient-to-b from-lagoon/80 via-lagoon/40 to-slate-50 dark:to-[#050914]"></div>
+    </div>
+    <div class="relative mx-auto flex max-w-7xl flex-col gap-10 px-4 py-24 lg:flex-row lg:items-center">
+        <div class="w-full space-y-8 lg:w-3/5">
+            <p class="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-4 py-1 text-xs font-semibold uppercase tracking-[0.32em] text-white backdrop-blur animate__animated animate__fadeInDown">
+                County · Community · Capital
+            </p>
+            <div class="space-y-6 text-white">
+                <h1 class="font-serif text-4xl leading-tight text-white sm:text-5xl lg:text-6xl animate__animated animate__fadeInUp">
+                    Uniting every ward voice under one audit-ready empowerment forum.
+                </h1>
+                <p class="max-w-2xl text-lg text-slate-100 animate__animated animate__fadeInUp animate__delay-1s">
+                    From SACCO liquidity to watershed restoration, KKEF synchronises community groups, county stakeholders, and donor partners with transparent dashboards, live notifications, and institutional-grade controls.
+                </p>
+            </div>
+            <div class="flex flex-wrap gap-4 animate__animated animate__fadeInUp animate__delay-2s">
+                <a href="{% url 'core:donate_portal' %}#join-group" class="rounded-full bg-white px-6 py-3 text-sm font-semibold text-lagoon shadow-lg shadow-black/40">Join forum</a>
+                <a href="{% url 'core:proposals_portal' %}" class="rounded-full border border-white/50 px-6 py-3 text-sm font-semibold text-white hover:bg-white/10">Submit project</a>
+                <a href="{% url 'core:donate_portal' %}" class="rounded-full bg-gradient-to-r from-gold via-forest to-royal px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-gold/30">Donate</a>
+                <a href="mailto:partnerships@kkef.go.ke" class="rounded-full border border-white/30 px-6 py-3 text-sm font-semibold text-white/80 hover:text-white">Become partner</a>
+            </div>
+        </div>
+        <div class="w-full lg:w-2/5" x-data="heroTicker()">
+            <div class="rounded-[32px] border border-white/30 bg-white/10 p-6 text-white backdrop-blur-2xl">
+                <div class="flex items-center justify-between text-xs uppercase tracking-[0.3em] text-white/70">
+                    <span>Forum signals</span>
+                    <button class="rounded-full bg-white/10 px-3 py-1 text-[10px]" @click="rotate()">Rotate story</button>
+                </div>
+                <div class="mt-6 space-y-4">
+                    <template x-for="(slide, idx) in slides" :key="slide.title">
+                        <div x-show="active === idx" x-transition class="rounded-3xl bg-gradient-to-br from-white/30 to-transparent p-5">
+                            <p class="text-sm text-white/80" x-text="slide.kicker"></p>
+                            <p class="mt-3 font-serif text-2xl" x-text="slide.title"></p>
+                            <p class="mt-2 text-sm text-white/90" x-text="slide.copy"></p>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block content %}
+<section class="mx-auto mt-16 max-w-7xl px-4" x-data="counterTiles({{ stats.groups }}, {{ stats.projects }}, {{ stats.beneficiaries }}, {{ stats.trees }})" x-init="animate()">
+    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <article class="rounded-3xl border border-white/50 bg-white/80 p-6 shadow-xl shadow-lagoon/5 backdrop-blur dark:border-white/10 dark:bg-white/5">
+            <p class="text-xs uppercase tracking-[0.3em] text-forest">Groups united</p>
+            <p class="mt-4 font-serif text-4xl text-lagoon dark:text-white" x-text="Math.round(groups)"></p>
+            <p class="mt-2 text-sm text-slate-500 dark:text-slate-300">CBOs · SACCOs · youth & women desks</p>
+        </article>
+        <article class="rounded-3xl border border-white/50 bg-white/80 p-6 shadow-xl shadow-lagoon/5 backdrop-blur dark:border-white/10 dark:bg-white/5">
+            <p class="text-xs uppercase tracking-[0.3em] text-royal">Flagship projects</p>
+            <p class="mt-4 font-serif text-4xl text-lagoon dark:text-white" x-text="Math.round(projects)"></p>
+            <p class="mt-2 text-sm text-slate-500 dark:text-slate-300">GIS tagged · SDG coded</p>
+        </article>
+        <article class="rounded-3xl border border-white/50 bg-white/80 p-6 shadow-xl shadow-lagoon/5 backdrop-blur dark:border-white/10 dark:bg-white/5">
+            <p class="text-xs uppercase tracking-[0.3em] text-gold">Household reach</p>
+            <p class="mt-4 font-serif text-4xl text-lagoon dark:text-white" x-text="Math.round(beneficiaries).toLocaleString()"></p>
+            <p class="mt-2 text-sm text-slate-500 dark:text-slate-300">Verified through ward enumerators</p>
+        </article>
+        <article class="rounded-3xl border border-white/50 bg-white/80 p-6 shadow-xl shadow-lagoon/5 backdrop-blur dark:border-white/10 dark:bg-white/5">
+            <p class="text-xs uppercase tracking-[0.3em] text-forest">Trees & nurseries</p>
+            <p class="mt-4 font-serif text-4xl text-lagoon dark:text-white" x-text="Math.round(trees).toLocaleString()"></p>
+            <p class="mt-2 text-sm text-slate-500 dark:text-slate-300">Citizen science + county GIS</p>
+        </article>
+    </div>
+</section>
+
+<section class="mx-auto mt-20 max-w-7xl px-4" x-data="{shift:0}" @scroll.window="shift = window.scrollY * 0.04">
+    <div class="grid gap-10 lg:grid-cols-2">
+        <div class="space-y-6 rounded-[32px] border border-white/40 bg-white/90 p-10 shadow-2xl shadow-lagoon/10 backdrop-blur-xl dark:border-white/10 dark:bg-white/5" :style="`transform: translateY(${shift * -0.2}px)`">
+            <p class="text-xs uppercase tracking-[0.32em] text-forest">About KKEF</p>
+            <h2 class="font-serif text-3xl text-lagoon dark:text-white">An umbrella for every community enterprise.</h2>
+            <p class="text-slate-600 dark:text-slate-300">We choreograph county technical teams, philanthropic partners, and hyper-local leaders into a single empowerment stack: projects, proposals, verified giving, and field intelligence.</p>
+            <div class="grid gap-4 sm:grid-cols-2">
+                <div class="rounded-2xl bg-forest/5 p-4 dark:bg-white/5">
+                    <p class="text-xs uppercase text-forest">Vision</p>
+                    <p class="mt-2 text-sm text-slate-600 dark:text-slate-200">A Kiambu-Karai citizenry fully equipped to co-steward social, ecological, and economic resilience.</p>
+                </div>
+                <div class="rounded-2xl bg-royal/5 p-4 dark:bg-white/5">
+                    <p class="text-xs uppercase text-royal">Mission</p>
+                    <p class="mt-2 text-sm text-slate-600 dark:text-slate-200">Blend data, culture, and capital to unlock transparent growth for every registered group.</p>
+                </div>
+            </div>
+            <ul class="grid gap-3 text-sm text-slate-600 dark:text-slate-300 sm:grid-cols-2">
+                <li class="flex gap-2"><i class="fa-solid fa-shield-halved text-gold"></i> Integrity & fiscal discipline</li>
+                <li class="flex gap-2"><i class="fa-solid fa-people-arrows text-gold"></i> Co-creation & inclusion</li>
+                <li class="flex gap-2"><i class="fa-solid fa-seedling text-gold"></i> Climate-smart livelihoods</li>
+                <li class="flex gap-2"><i class="fa-solid fa-chart-line text-gold"></i> Evidence-led decisions</li>
+            </ul>
+        </div>
+        <div class="space-y-6">
+            <div class="rounded-[32px] border border-white/30 bg-gradient-to-br from-lagoon via-lagoon to-forest p-8 text-white shadow-2xl">
+                <p class="text-xs uppercase tracking-[0.3em] text-white/70">Leadership philosophy</p>
+                <p class="mt-4 font-serif text-3xl">Rotating stewardship with audited decision trails.</p>
+                <p class="mt-4 text-sm text-white/80">Forum administrators curate approvals, group leaders steward field truth, donors track capital outcomes, while stakeholders digitally co-sign major escalations.</p>
+            </div>
+            <div class="rounded-[32px] border border-white/40 bg-white/90 p-6 backdrop-blur dark:border-white/10 dark:bg-white/5">
+                <p class="text-xs uppercase tracking-[0.3em] text-forest">Partner organizations</p>
+                <div class="mt-4 flex flex-wrap gap-3 text-sm text-slate-600 dark:text-slate-300">
+                    <span class="rounded-full bg-slate-100 px-3 py-1 dark:bg-white/10">County GIS desk</span>
+                    <span class="rounded-full bg-slate-100 px-3 py-1 dark:bg-white/10">Youth enterprise fund</span>
+                    <span class="rounded-full bg-slate-100 px-3 py-1 dark:bg-white/10">Climate action partners</span>
+                    <span class="rounded-full bg-slate-100 px-3 py-1 dark:bg-white/10">Aquaculture extension</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="mx-auto mt-20 max-w-7xl px-4">
+    <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div>
+            <p class="text-xs uppercase tracking-[0.3em] text-forest">Community projects</p>
+            <h3 class="font-serif text-3xl text-lagoon dark:text-white">Live impact canvas</h3>
+        </div>
+        <a href="{% url 'core:projects_portal' %}" class="text-sm font-semibold text-royal hover:text-forest">Open project cloud →</a>
+    </div>
+    <div class="mt-8 grid gap-6 md:grid-cols-3">
+        {% for project in featured_projects %}
+            <article class="group rounded-3xl border border-white/40 bg-white/90 p-6 shadow-xl shadow-lagoon/5 backdrop-blur transition hover:-translate-y-1 dark:border-white/10 dark:bg-white/5">
+                <p class="text-xs uppercase tracking-wide text-forest">{{ project.get_status_display }}</p>
+                <h4 class="mt-3 font-semibold text-lg text-lagoon group-hover:text-forest dark:text-white">{{ project.title }}</h4>
+                <p class="mt-2 text-sm text-slate-600 line-clamp-3 dark:text-slate-300">{{ project.description }}</p>
+                <div class="mt-4">
+                    <div class="flex items-center justify-between text-xs text-slate-500">
+                        <span>Progress</span>
+                        <span>{{ project.progress_percentage }}%</span>
+                    </div>
+                    <div class="mt-2 h-2 rounded-full bg-slate-100 dark:bg-white/10">
+                        <div class="h-full rounded-full bg-gradient-to-r from-forest to-gold" style="width: {{ project.progress_percentage }}%"></div>
+                    </div>
+                </div>
+            </article>
+        {% empty %}
+            <p class="text-sm text-slate-500">Seed the demo dataset to illuminate this grid.</p>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="mx-auto mt-20 max-w-7xl px-4 grid gap-6 lg:grid-cols-2">
+    <div class="rounded-[32px] border border-white/40 bg-white/90 p-8 backdrop-blur dark:border-white/10 dark:bg-white/5">
+        <p class="text-xs uppercase tracking-[0.3em] text-gold">Success stories</p>
+        <h3 class="mt-4 font-serif text-3xl text-lagoon dark:text-white">“We now negotiate with investors carrying live dashboards.”</h3>
+        <p class="mt-4 text-sm text-slate-600 dark:text-slate-300">Oasis Fish Farmers leveraged the proposal assistant, digital signatures, and donor transparency widgets to unlock blended finance for cold-chain pilots.</p>
+    </div>
+    <div class="rounded-[32px] border border-lagoon/20 bg-gradient-to-br from-white to-slate-50 p-8 dark:from-lagoon/40 dark:to-[#040912]">
+        <p class="text-xs uppercase tracking-[0.3em] text-royal">Testimonials</p>
+        <div class="mt-6 space-y-6">
+            <blockquote class="border-l-4 border-gold pl-4 text-slate-700 dark:text-slate-200">“County teams finally share a GIS layer with community monitors—no more siloed PDFs.”</blockquote>
+            <blockquote class="border-l-4 border-forest pl-4 text-slate-700 dark:text-slate-200">“Donors see where every shilling lands. That trust dividend is measurable.”</blockquote>
+        </div>
+    </div>
+</section>
+
+<section class="mx-auto mt-20 max-w-7xl px-4 grid gap-6 lg:grid-cols-2">
+    <div class="rounded-[32px] border border-white/40 bg-white/90 p-8 backdrop-blur dark:border-white/10 dark:bg-white/5">
+        <div class="flex items-center justify-between">
+            <h3 class="font-serif text-2xl text-lagoon dark:text-white">News & updates</h3>
+            <a class="text-sm font-semibold text-royal" href="{% url 'core:media_portal' %}">Newsroom</a>
+        </div>
+        <ul class="mt-6 space-y-4">
+            {% for article in news_items %}
+                <li class="rounded-2xl border border-slate-100 p-4 dark:border-white/10">
+                    <p class="text-xs uppercase text-forest">{{ article.updated_at|date:"M d, Y" }}</p>
+                    <p class="mt-1 font-semibold text-lagoon dark:text-white">{{ article.title }}</p>
+                    <p class="text-sm text-slate-600 dark:text-slate-300">{{ article.summary|truncatewords:24 }}</p>
+                </li>
+            {% empty %}
+                <li class="text-sm text-slate-500">Publish articles via the media API or admin.</li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="rounded-[32px] border border-white/40 bg-white/90 p-8 backdrop-blur dark:border-white/10 dark:bg-white/5">
+        <div class="flex items-center justify-between">
+            <h3 class="font-serif text-2xl text-lagoon dark:text-white">Upcoming events</h3>
+            <a class="text-sm font-semibold text-royal" href="{% url 'core:events_portal' %}">RSVP desk</a>
+        </div>
+        <ul class="mt-6 space-y-4">
+            {% for event in upcoming_events %}
+                <li class="flex items-center justify-between rounded-2xl bg-slate-50 px-4 py-3 dark:bg-white/5">
+                    <div>
+                        <p class="text-xs uppercase text-forest">{{ event.start_at|date:"M d · H:i" }}</p>
+                        <p class="font-semibold text-lagoon dark:text-white">{{ event.title }}</p>
+                        <p class="text-sm text-slate-500">{{ event.venue_descriptor }}</p>
+                    </div>
+                    <i class="fa-regular fa-calendar-check text-gold text-2xl"></i>
+                </li>
+            {% empty %}
+                <li class="text-sm text-slate-500">Create events to populate this timeline.</li>
+            {% endfor %}
+        </ul>
+    </div>
+</section>
+
+<section class="mx-auto mt-20 max-w-7xl px-4">
+    <div class="rounded-[36px] border border-white/50 bg-gradient-to-r from-lagoon via-lagoon to-forest p-10 text-white shadow-2xl">
+        <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+                <p class="text-xs uppercase tracking-[0.3em] text-white/70">Sponsors & donors</p>
+                <h3 class="mt-3 font-serif text-3xl">Premium transparency for premium partners.</h3>
+                <p class="mt-3 max-w-2xl text-sm text-white/80">Stripe, PayPal, and M-Pesa adapters stream into a single ledger with webhook verification, PDF exports, and AI summarised board packs.</p>
+            </div>
+            <div class="flex flex-wrap gap-3 text-xs font-semibold uppercase tracking-wide">
+                <span class="rounded-full bg-white/10 px-4 py-2">Impact analytics</span>
+                <span class="rounded-full bg-white/10 px-4 py-2">Sponsor lounges</span>
+                <span class="rounded-full bg-white/10 px-4 py-2">QR attendance</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="mx-auto mt-16 max-w-7xl px-4 grid gap-6 md:grid-cols-3">
+    <article class="rounded-3xl border border-white/40 bg-white/90 p-6 backdrop-blur dark:border-white/10 dark:bg-white/5">
+        <p class="text-xs uppercase text-forest">Environmental activities</p>
+        <p class="mt-3 text-sm text-slate-600 dark:text-slate-300">Bio-enterprise corridors, riparian rehab, youth-led biodiversity observatories.</p>
+    </article>
+    <article class="rounded-3xl border border-white/40 bg-white/90 p-6 backdrop-blur dark:border-white/10 dark:bg-white/5">
+        <p class="text-xs uppercase text-royal">Youth empowerment</p>
+        <p class="mt-3 text-sm text-slate-600 dark:text-slate-300">Mentorship pods, civic-tech labs, digital gig markets aligned to county plans.</p>
+    </article>
+    <article class="rounded-3xl border border-white/40 bg-white/90 p-6 backdrop-blur dark:border-white/10 dark:bg-white/5">
+        <p class="text-xs uppercase text-gold">Women & fish farmers</p>
+        <p class="mt-3 text-sm text-slate-600 dark:text-slate-300">Gender-lens finance, aquaculture cold chains, cooperative governance academies.</p>
+    </article>
+</section>
+
+<section class="mx-auto mt-16 max-w-7xl px-4">
+    <div class="rounded-[32px] border border-dashed border-forest/40 bg-forest/5 p-8 text-center dark:border-white/20 dark:bg-white/5">
+        <p class="text-xs uppercase tracking-[0.3em] text-forest">Tree planting & clean-ups</p>
+        <h3 class="mt-4 font-serif text-3xl text-lagoon dark:text-white">Mobilise volunteers with QR-coded attendance and photo evidence chains.</h3>
+        <div class="mt-6 flex flex-wrap justify-center gap-4 text-sm">
+            <a class="rounded-full bg-lagoon px-5 py-2 text-white" href="{% url 'core:events_portal' %}">Plan a clean-up</a>
+            <a class="rounded-full border border-lagoon/30 px-5 py-2 text-lagoon dark:text-white" href="{% url 'core:maps_portal' %}">Open GIS layer</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Impact · KKEF{% endblock %}
+{% block content %}
+<section class="mx-auto max-w-6xl px-4 py-16 space-y-10" x-data="{tiles:{}}" x-init="prefetchTiles().then(d => tiles = d)">
+    <div>
+        <p class="text-xs uppercase tracking-[0.3em] text-forest">Impact observatory</p>
+        <h1 class="font-serif text-4xl text-lagoon dark:text-white">Transparent metrics for citizens and investors</h1>
+    </div>
+    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <article class="rounded-3xl border border-white/40 bg-white/90 p-6 backdrop-blur dark:border-white/10 dark:bg-white/5">
+            <p class="text-xs uppercase text-slate-500">Registered groups</p>
+            <p class="mt-3 font-serif text-3xl text-lagoon dark:text-white" x-text="tiles.grouped_cbos ?? '—'"></p>
+        </article>
+        <article class="rounded-3xl border border-white/40 bg-white/90 p-6 backdrop-blur dark:border-white/10 dark:bg-white/5">
+            <p class="text-xs uppercase text-slate-500">Portfolio projects</p>
+            <p class="mt-3 font-serif text-3xl text-lagoon dark:text-white" x-text="tiles.portfolio_projects ?? '—'"></p>
+        </article>
+        <article class="rounded-3xl border border-white/40 bg-white/90 p-6 backdrop-blur dark:border-white/10 dark:bg-white/5">
+            <p class="text-xs uppercase text-slate-500">Verified giving (KES)</p>
+            <p class="mt-3 font-serif text-3xl text-lagoon dark:text-white" x-text="tiles.verified_giving_kes ? tiles.verified_giving_kes.toLocaleString() : '—'"></p>
+        </article>
+        <article class="rounded-3xl border border-white/40 bg-white/90 p-6 backdrop-blur dark:border-white/10 dark:bg-white/5">
+            <p class="text-xs uppercase text-slate-500">Governance queues</p>
+            <p class="mt-3 font-serif text-3xl text-lagoon dark:text-white" x-text="tiles.governance_queues ?? '—'"></p>
+        </article>
+    </div>
+</section>
+{% endblock %}

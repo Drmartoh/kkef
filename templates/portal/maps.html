@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}GIS maps · KKEF{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+{% endblock %}
+{% block content %}
+<section class="mx-auto max-w-6xl px-4 py-16 space-y-6">
+    <div>
+        <p class="text-xs uppercase tracking-[0.3em] text-forest">Geospatial</p>
+        <h1 class="font-serif text-3xl text-lagoon dark:text-white">Ward &amp; project map</h1>
+        <p class="text-sm text-slate-600 dark:text-slate-300">Groups and projects with coordinates appear as markers. Centre: Karai convergence zone.</p>
+    </div>
+    <div id="kkef-map" class="h-[480px] rounded-[32px] border border-white/40 shadow-2xl"></div>
+    <p class="text-xs text-slate-500"><span class="inline-block h-2 w-2 rounded-full bg-forest mr-1"></span> Groups · <span class="inline-block h-2 w-2 rounded-full bg-gold mr-1"></span> Projects</p>
+</section>
+{{ map_markers|json_script:"map-markers-data" }}
+{% endblock %}
+{% block extra_scripts %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+  window.addEventListener('load', () => {
+    const center = [-1.174, 36.938];
+    const map = L.map('kkef-map').setView(center, 12);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; OpenStreetMap'
+    }).addTo(map);
+
+    let markers = [];
+    const el = document.getElementById('map-markers-data');
+    if (el) {
+      try { markers = JSON.parse(el.textContent); } catch (_) {}
+    }
+
+    if (!markers.length) {
+      L.circleMarker(center, { radius: 12, color: '#15803d', fillColor: '#d4a017', fillOpacity: 0.7 })
+        .addTo(map)
+        .bindPopup('Karai convergence zone — add lat/lng on groups &amp; projects to populate the map.');
+      return;
+    }
+
+    const bounds = [];
+    markers.forEach((m) => {
+      const color = m.kind === 'group' ? '#15803d' : '#d4a017';
+      const marker = L.circleMarker([m.lat, m.lng], { radius: 9, color, fillColor: color, fillOpacity: 0.75 })
+        .addTo(map)
+        .bindPopup(`<strong>${m.label}</strong><br>${m.ward || ''}`);
+      bounds.push([m.lat, m.lng]);
+    });
+    if (bounds.length > 1) {
+      map.fitBounds(bounds, { padding: [40, 40] });
+    }
+  });
+</script>
+{% endblock %}

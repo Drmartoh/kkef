@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}Project cloud · KKEF{% endblock %}
+{% block content %}
+<section class="mx-auto max-w-6xl px-4 py-14 space-y-6" x-data="projectHub()" x-init="load()">
+    <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div>
+            <p class="text-xs uppercase tracking-[0.3em] text-forest">Operational module</p>
+            <h1 class="font-serif text-3xl text-lagoon dark:text-white">Kanban-grade project cloud</h1>
+            <p class="mt-2 max-w-2xl text-sm text-slate-600 dark:text-slate-300">Live portfolio across wards — from approval through completion.</p>
+        </div>
+        <button type="button" class="rounded-full bg-lagoon px-5 py-2 text-xs font-semibold uppercase tracking-wide text-white" @click="load()">Reload board</button>
+    </div>
+
+    {% include "includes/portal_sign_in_banner.html" %}
+
+    {{ kanban_board|json_script:"kanban-bootstrap" }}
+
+    <template x-if="loading">
+        <div class="grid gap-4 md:grid-cols-3">
+            <template x-for="i in 6" :key="i">
+                <div class="animate-pulse rounded-3xl bg-slate-100/80 h-32 dark:bg-white/10"></div>
+            </template>
+        </template>
+    </template>
+
+    <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3" x-show="!loading">
+        <template x-for="column in columns" :key="column.id">
+            <div class="rounded-[28px] border border-white/40 bg-white/90 p-4 backdrop-blur dark:border-white/10 dark:bg-white/5">
+                <div class="flex items-center justify-between">
+                    <p class="text-sm font-semibold text-lagoon dark:text-white" x-text="column.title"></p>
+                    <span class="rounded-full bg-slate-900/5 px-3 py-1 text-xs text-slate-500 dark:bg-white/10" x-text="column.records.length"></span>
+                </div>
+                <div class="mt-4 space-y-3">
+                    <template x-for="card in column.records" :key="card.id">
+                        <article class="rounded-2xl border border-slate-100 p-4 text-sm dark:border-white/10">
+                            <p class="font-semibold text-lagoon dark:text-white" x-text="card.title"></p>
+                            <p class="text-xs uppercase text-forest" x-text="card.location || 'Location updating'"></p>
+                            <div class="mt-2 h-2 rounded-full bg-slate-100 dark:bg-white/10">
+                                <div class="h-full rounded-full bg-gradient-to-r from-forest to-gold" :style="`width:${card.progress_percentage || 0}%`"></div>
+                            </div>
+                        </article>
+                    </template>
+                    <p x-show="column.records.length === 0" class="text-xs text-slate-400">No projects in this lane yet.</p>
+                </div>
+            </div>
+        </template>
+    </div>
+</section>
+{% endblock %}
+{% block extra_head %}
+<script>
+  document.addEventListener('alpine:init', () => {
+    Alpine.data('projectHub', () => ({
+      columns: [],
+      loading: true,
+      bootstrap() {
+        const el = document.getElementById('kanban-bootstrap');
+        if (!el) return null;
+        try {
+          return JSON.parse(el.textContent);
+        } catch (_) {
+          return null;
+        }
+      },
+      async load() {
+        this.loading = true;
+        const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+        try {
+          const res = await fetch('/api/v1/projects/kanban/', {
+            credentials: 'same-origin',
+            headers: {
+              'Accept': 'application/json',
+              'X-CSRFToken': token || ''
+            }
+          });
+          if (res.ok) {
+            this.columns = await res.json();
+          } else {
+            this.columns = this.bootstrap() || [];
+          }
+        } catch (error) {
+          console.error(error);
+          this.columns = this.bootstrap() || [];
+        } finally {
+          this.loading = false;
+        }
+      }
+    }));
+  });
+</script>
+{% endblock %}

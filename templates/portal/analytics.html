@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Analytics observatory · KKEF{% endblock %}
+{% block content %}
+<section class="mx-auto max-w-6xl px-4 py-16 space-y-8">
+    <div>
+        <p class="text-xs uppercase tracking-[0.3em] text-forest">Transparency</p>
+        <h1 class="font-serif text-3xl text-lagoon dark:text-white">Analytics observatory</h1>
+        <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">Public KPI tiles refreshed from live forum data.</p>
+    </div>
+
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div class="rounded-3xl border border-white/50 bg-white/90 p-6 dark:border-white/10 dark:bg-white/5">
+            <p class="text-xs uppercase tracking-wide text-slate-500">Published groups</p>
+            <p class="mt-2 font-serif text-3xl text-lagoon dark:text-white">{{ tiles.grouped_cbos }}</p>
+        </div>
+        <div class="rounded-3xl border border-white/50 bg-white/90 p-6 dark:border-white/10 dark:bg-white/5">
+            <p class="text-xs uppercase tracking-wide text-slate-500">Active projects</p>
+            <p class="mt-2 font-serif text-3xl text-lagoon dark:text-white">{{ tiles.portfolio_projects }}</p>
+        </div>
+        <div class="rounded-3xl border border-white/50 bg-white/90 p-6 dark:border-white/10 dark:bg-white/5">
+            <p class="text-xs uppercase tracking-wide text-slate-500">Verified giving (KES)</p>
+            <p class="mt-2 font-serif text-3xl text-lagoon dark:text-white">{{ tiles.verified_giving_kes|floatformat:0 }}</p>
+        </div>
+        <div class="rounded-3xl border border-white/50 bg-white/90 p-6 dark:border-white/10 dark:bg-white/5">
+            <p class="text-xs uppercase tracking-wide text-slate-500">Governance queue</p>
+            <p class="mt-2 font-serif text-3xl text-lagoon dark:text-white">{{ tiles.governance_queues }}</p>
+        </div>
+    </div>
+
+    {% if user.is_authenticated and user.is_staff %}
+    <p class="text-xs text-slate-500">Executive pulse charts are available to forum admins via <code class="rounded bg-slate-100 px-1 dark:bg-white/10">/api/v1/analytics/executive/</code>.</p>
+    {% else %}
+    {% include "includes/portal_sign_in_banner.html" %}
+    {% endif %}
+</section>
+{% endblock %}

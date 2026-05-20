@@ -1,0 +1,106 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    <title>{% block title %}Kiambu-Karai Empowerment Forum{% endblock %}</title>
+    <meta name="description" content="{% block meta_description %}KKEF unites community groups under an audit-ready empowerment ecosystem spanning projects, SACCO cohesion, watershed stewardship, and donor transparency.{% endblock %}">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" referrerpolicy="no-referrer"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" referrerpolicy="no-referrer"/>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    {% block extra_head %}{% endblock %}
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              forest: '#15803d',
+              lagoon: '#0f172a',
+              royal: '#1d4ed8',
+              gold: '#d4a017'
+            },
+            fontFamily: {
+              sans: ['Inter', 'ui-sans-serif', 'system-ui'],
+              serif: ['"Playfair Display"', 'Georgia', 'serif']
+            },
+            backdropBlur: {
+              xs: '2px'
+            }
+          }
+        }
+      };
+    </script>
+    <script>
+      document.addEventListener('alpine:init', () => {
+        Alpine.store('theme', {
+          dark: false,
+          boot() {
+            const stored = localStorage.getItem('kkef-theme');
+            if (stored) {
+              this.dark = stored === 'dark';
+            } else if (window.matchMedia) {
+              this.dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            }
+            document.documentElement.classList.toggle('dark', this.dark);
+          },
+          toggle() {
+            this.dark = !this.dark;
+            localStorage.setItem('kkef-theme', this.dark ? 'dark' : 'light');
+            document.documentElement.classList.toggle('dark', this.dark);
+          }
+        });
+
+        Alpine.store('theme').boot();
+      });
+
+      async function prefetchTiles() {
+        try {
+          const res = await fetch('/api/v1/analytics/tiles/');
+          if (!res.ok) return {};
+          return await res.json();
+        } catch (_) {
+          return {};
+        }
+      }
+
+      window.prefetchTiles = prefetchTiles;
+    </script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"></script>
+    <style>[x-cloak] { display: none !important; }</style>
+</head>
+<body class="relative min-h-screen bg-slate-50 text-lagoon dark:bg-[#070c16] dark:text-slate-100 transition-colors duration-300">
+<div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden opacity-70">
+    <div class="animate-pulse bg-gradient-to-br from-forest via-forest/70 to-transparent blur-3xl h-[460px] w-[460px] rounded-full opacity-70 absolute -left-32 top-[-80px]"></div>
+    <div class="bg-gradient-to-tr from-royal/40 via-transparent to-gold/30 blur-3xl h-[380px] w-[380px] rounded-full absolute right-[-80px] top-32"></div>
+</div>
+
+{% include "includes/navbar.html" %}
+
+{% block hero %}{% endblock %}
+
+<main class="relative z-10">
+    {% if messages %}
+        <div class="mx-auto max-w-5xl px-4 pt-6 space-y-3">
+            {% for message in messages %}
+                <div class="rounded-2xl border border-forest/20 bg-white/80 px-4 py-3 text-sm text-lagoon shadow-lg shadow-forest/10 backdrop-blur dark:border-white/10 dark:bg-lagoon/70 dark:text-white">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+</main>
+
+{% include "includes/footer.html" %}
+{% block extra_scripts %}{% endblock %}
+</body>
+</html>
