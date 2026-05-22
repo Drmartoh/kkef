@@ -3,49 +3,51 @@
 {% block extra_head %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js" defer></script>
 {% endblock %}
+
+{% block hero %}
+{% include "includes/page_hero.html" with kicker="Mission deck" title="Welcome back, {{ user.get_full_name|default:user.username }}" subtitle="Role focus: {{ user_role_display }} — your personalised forum command surface." icon="fa-gauge-high" variant="lagoon" only %}
+{% endblock %}
+
 {% block content %}
-<section class="mx-auto max-w-7xl px-4 py-12 space-y-10">
-    <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div>
-            <p class="text-xs uppercase tracking-[0.3em] text-forest">Signed in as {{ user.get_full_name|default:user.username }}</p>
-            <h1 class="font-serif text-3xl text-lagoon dark:text-white">Mission deck</h1>
-            <p class="text-sm text-slate-500 dark:text-slate-300">Role focus:
-                <span class="font-semibold text-forest">{{ user_role_display }}</span></p>
-        </div>
-        <div class="flex flex-wrap gap-3 text-xs font-semibold uppercase tracking-wide">
-            <a class="rounded-full border border-slate-200 px-4 py-2 dark:border-white/20" href="{% url 'core:projects_portal' %}">Projects</a>
-            <a class="rounded-full border border-slate-200 px-4 py-2 dark:border-white/20" href="{% url 'core:analytics_portal' %}">Analytics</a>
-        </div>
+<section class="kkef-page mx-auto max-w-7xl px-4 py-12 sm:py-16 space-y-10" x-data="pageReveal()" x-init="init()">
+    <div class="flex flex-wrap gap-3" :class="visible ? 'opacity-100' : 'opacity-0'" style="transition: 0.5s;">
+        <a class="kkef-btn-ghost" href="{% url 'core:projects_portal' %}">Projects</a>
+        <a class="kkef-btn-ghost" href="{% url 'core:analytics_portal' %}">Analytics</a>
+        {% if user.is_staff or user.role == 'super_admin' or user.role == 'forum_admin' %}
+        <a class="kkef-btn-primary" href="{% url 'core:manage_dashboard' %}">Control center</a>
+        {% endif %}
     </div>
-    <div class="grid gap-6 md:grid-cols-3">
-        <article class="rounded-3xl border border-white/40 bg-white/90 p-6 backdrop-blur dark:border-white/10 dark:bg-white/5">
-            <p class="text-xs uppercase text-slate-500">Projects tracked</p>
+
+    <div class="grid grid-cols-1 gap-4 min-[420px]:grid-cols-3 lg:gap-6" :class="visible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'" style="transition: 0.7s;">
+        <article class="kkef-kpi">
+            <p class="text-xs font-bold uppercase tracking-wider text-slate-500">Projects tracked</p>
             <p class="mt-3 font-serif text-4xl text-lagoon dark:text-white">{{ kpi_projects }}</p>
         </article>
-        <article class="rounded-3xl border border-white/40 bg-white/90 p-6 backdrop-blur dark:border-white/10 dark:bg-white/5">
-            <p class="text-xs uppercase text-slate-500">Ongoing</p>
+        <article class="kkef-kpi">
+            <p class="text-xs font-bold uppercase tracking-wider text-slate-500">Ongoing</p>
             <p class="mt-3 font-serif text-4xl text-forest">{{ kpi_ongoing }}</p>
         </article>
-        <article class="rounded-3xl border border-white/40 bg-white/90 p-6 backdrop-blur dark:border-white/10 dark:bg-white/5">
-            <p class="text-xs uppercase text-slate-500">Verified giving (you)</p>
-            <p class="mt-3 font-serif text-4xl text-gold">{{ kpi_funding_ytd }}</p>
+        <article class="kkef-kpi">
+            <p class="text-xs font-bold uppercase tracking-wider text-slate-500">Verified giving (you)</p>
+            <p class="mt-3 font-serif text-3xl text-gold">{{ kpi_funding_ytd }}</p>
         </article>
     </div>
-    <div class="grid gap-6 lg:grid-cols-2">
-        <div class="rounded-[32px] border border-white/40 bg-white/90 p-6 backdrop-blur dark:border-white/10 dark:bg-white/5">
-            <canvas id="statusChart" height="220"></canvas>
-            <p class="mt-4 text-xs text-slate-500">Executive doughnut requires forum administrator privileges. Everyone else sees an intentional blank canvas.</p>
+
+    <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <div class="kkef-glass p-5 sm:p-6">
+            <canvas id="statusChart" class="max-h-[280px] w-full"></canvas>
+            <p class="mt-4 text-xs text-slate-500">Portfolio breakdown when executive API access is available.</p>
         </div>
-        <div class="rounded-[32px] border border-white/40 bg-white/90 p-6 backdrop-blur dark:border-white/10 dark:bg-white/5">
-            <h3 class="font-semibold text-lagoon dark:text-white">Upcoming convenings</h3>
+        <div class="kkef-glass p-5 sm:p-6">
+            <h3 class="font-serif text-lg text-lagoon dark:text-white">Upcoming convenings</h3>
             <ul class="mt-4 space-y-3 text-sm text-slate-600 dark:text-slate-300">
                 {% for event in upcoming_events %}
-                    <li class="rounded-2xl border border-slate-100 p-3 dark:border-white/10">
-                        <p class="text-xs uppercase text-forest">{{ event.start_at|date:"M d, H:i" }}</p>
-                        <p class="font-semibold text-lagoon dark:text-white">{{ event.title }}</p>
-                    </li>
+                <li class="kkef-list-item">
+                    <p class="text-xs font-bold uppercase text-forest">{{ event.start_at|date:"M d, H:i" }}</p>
+                    <p class="font-semibold text-lagoon dark:text-white">{{ event.title }}</p>
+                </li>
                 {% empty %}
-                    <li>No upcoming events yet.</li>
+                <li class="text-slate-500">No upcoming events yet.</li>
                 {% endfor %}
             </ul>
         </div>
@@ -55,40 +57,24 @@
 {% block extra_scripts %}
 <script>
   window.addEventListener('load', async () => {
-    if (typeof Chart === 'undefined') {
-      return;
-    }
+    if (typeof Chart === 'undefined') return;
     const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
     const response = await fetch('/api/v1/analytics/executive/', {
-      headers: {
-        'Accept': 'application/json',
-        'X-CSRFToken': token || ''
-      },
+      headers: { Accept: 'application/json', 'X-CSRFToken': token || '' },
       credentials: 'same-origin'
     });
-    if (!response.ok) {
-      return;
-    }
+    if (!response.ok) return;
     const payload = await response.json();
     const breakdown = payload.status_breakdown || [];
     const ctx = document.getElementById('statusChart');
-    if (!ctx || !breakdown.length) {
-      return;
-    }
+    if (!ctx || !breakdown.length) return;
     new Chart(ctx, {
       type: 'doughnut',
       data: {
         labels: breakdown.map((row) => row.status),
-        datasets: [{
-          data: breakdown.map((row) => row.total),
-          backgroundColor: ['#15803d', '#1d4ed8', '#d4a017', '#0f172a', '#94a3b8', '#f97316']
-        }]
+        datasets: [{ data: breakdown.map((row) => row.total), backgroundColor: ['#15803d', '#1d4ed8', '#d4a017', '#0f172a', '#94a3b8', '#f97316'] }]
       },
-      options: {
-        plugins: {
-          legend: { position: 'bottom' }
-        }
-      }
+      options: { plugins: { legend: { position: 'bottom' } }, maintainAspectRatio: true }
     });
   });
 </script>

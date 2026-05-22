@@ -1,42 +1,54 @@
 {% extends "base.html" %}
 {% block title %}Search · KKEF{% endblock %}
+
+{% block hero %}
+{% include "includes/page_hero.html" with kicker="Discover" title="Search the forum ecosystem" subtitle="Find groups, projects, and news stories across Kiambu-Karai wards." icon="fa-magnifying-glass" variant="gold" %}
+{% endblock %}
+
 {% block content %}
-<section class="mx-auto max-w-6xl px-4 py-16 space-y-8">
-    <form method="get" class="rounded-[32px] border border-white/40 bg-white/90 p-6 backdrop-blur dark:border-white/10 dark:bg-white/5">
-        <label class="text-xs uppercase tracking-[0.3em] text-forest" for="q">Global search</label>
-        <div class="mt-4 flex flex-col gap-3 md:flex-row">
-            <input id="q" name="q" value="{{ query }}" class="flex-1 rounded-2xl border border-slate-200 px-4 py-3 text-sm dark:border-white/10 dark:bg-transparent" placeholder="Try “aquaculture”, “women”, or a ward name">
-            <button class="rounded-2xl bg-lagoon px-6 py-3 text-sm font-semibold text-white">Search</button>
+<section class="kkef-page mx-auto max-w-7xl px-4 py-14 sm:py-20 space-y-10" x-data="pageReveal()" x-init="init()">
+    <form method="get" class="kkef-glass p-6 sm:p-8" :class="visible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'" style="transition: duration 0.6s;">
+        <label class="text-xs font-bold uppercase tracking-[0.3em] text-forest" for="q">Global search</label>
+        <div class="mt-4 flex flex-col gap-3 sm:flex-row">
+            <input id="q" name="q" value="{{ query }}" class="kkef-field flex-1" placeholder="Try “aquaculture”, “women”, or a ward name">
+            <button type="submit" class="kkef-btn-primary shrink-0 px-8">Search</button>
         </div>
     </form>
-    <div class="grid gap-8 md:grid-cols-3">
-        <div>
-            <h2 class="font-semibold text-lagoon dark:text-white">Groups</h2>
-            <ul class="mt-4 space-y-3 text-sm">
+
+    <div class="grid grid-cols-1 gap-8 md:grid-cols-3 md:gap-6" :class="visible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'" style="transition: duration 0.7s delay 0.1s;">
+        <div class="kkef-glass p-5 sm:p-6">
+            <h2 class="flex items-center gap-2 font-serif text-lg text-lagoon dark:text-white">
+                <i class="fa-solid fa-people-group text-forest"></i> Groups
+            </h2>
+            <ul class="mt-4 space-y-2 text-sm">
                 {% for group in groups %}
-                    <li class="rounded-2xl border border-slate-100 p-3 dark:border-white/10">{{ group.name }}</li>
+                <li class="kkef-list-item font-medium text-lagoon dark:text-white">{{ group.name }}</li>
                 {% empty %}
-                    <li class="text-slate-500">No groups matched.</li>
+                <li class="text-slate-500">No groups matched.</li>
                 {% endfor %}
             </ul>
         </div>
-        <div>
-            <h2 class="font-semibold text-lagoon dark:text-white">Projects</h2>
-            <ul class="mt-4 space-y-3 text-sm">
+        <div class="kkef-glass p-5 sm:p-6">
+            <h2 class="flex items-center gap-2 font-serif text-lg text-lagoon dark:text-white">
+                <i class="fa-solid fa-diagram-project text-royal"></i> Projects
+            </h2>
+            <ul class="mt-4 space-y-2 text-sm">
                 {% for project in projects %}
-                    <li class="rounded-2xl border border-slate-100 p-3 dark:border-white/10">{{ project.title }}</li>
+                <li class="kkef-list-item font-medium text-lagoon dark:text-white">{{ project.title }}</li>
                 {% empty %}
-                    <li class="text-slate-500">No projects matched.</li>
+                <li class="text-slate-500">No projects matched.</li>
                 {% endfor %}
             </ul>
         </div>
-        <div>
-            <h2 class="font-semibold text-lagoon dark:text-white">News</h2>
-            <ul class="mt-4 space-y-3 text-sm">
+        <div class="kkef-glass p-5 sm:p-6">
+            <h2 class="flex items-center gap-2 font-serif text-lg text-lagoon dark:text-white">
+                <i class="fa-solid fa-newspaper text-gold"></i> News
+            </h2>
+            <ul class="mt-4 space-y-2 text-sm">
                 {% for article in articles %}
-                    <li class="rounded-2xl border border-slate-100 p-3 dark:border-white/10">{{ article.title }}</li>
+                <li class="kkef-list-item font-medium text-lagoon dark:text-white">{{ article.title }}</li>
                 {% empty %}
-                    <li class="text-slate-500">No stories matched.</li>
+                <li class="text-slate-500">No stories matched.</li>
                 {% endfor %}
             </ul>
         </div>

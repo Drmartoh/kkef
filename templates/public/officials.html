@@ -4,79 +4,166 @@
 
 {% block extra_head %}
 <style>
-  .official-card .hover-panel {
-    transform: translateY(0.5rem);
+  .officials-hero-mesh {
+    background-image:
+      radial-gradient(circle at 20% 20%, rgba(21, 128, 61, 0.35), transparent 42%),
+      radial-gradient(circle at 80% 10%, rgba(29, 78, 216, 0.3), transparent 38%),
+      radial-gradient(circle at 60% 80%, rgba(212, 160, 23, 0.25), transparent 45%),
+      linear-gradient(135deg, #0f172a 0%, #134e4a 45%, #15803d 100%);
   }
-  .official-card:hover .hover-panel,
-  .official-card:focus-within .hover-panel,
-  .official-card.is-open .hover-panel {
-    opacity: 1;
-    pointer-events: auto;
-    transform: translateY(0);
+  .officials-grid-pattern {
+    background-image: linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
+    background-size: 48px 48px;
   }
-  .official-card:hover .avatar-ring,
-  .official-card:focus-within .avatar-ring,
-  .official-card.is-open .avatar-ring {
-    --tw-ring-color: rgb(21 128 61 / 0.6);
-    box-shadow: 0 20px 40px -12px rgb(21 128 61 / 0.35);
+  @keyframes officials-float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+  .officials-float { animation: officials-float 6s ease-in-out infinite; }
+  @media (prefers-reduced-motion: reduce) {
+    .officials-float { animation: none; }
   }
 </style>
+<script>
+  document.addEventListener('alpine:init', () => {
+    Alpine.data('officialsReveal', () => ({
+      visible: false,
+      init() {
+        const observer = new IntersectionObserver(
+          ([entry]) => { if (entry.isIntersecting) this.visible = true; },
+          { threshold: 0.12 }
+        );
+        observer.observe(this.$el);
+      },
+    }));
+  });
+</script>
 {% endblock %}
 
 {% block hero %}
-<section class="border-b border-white/30 bg-gradient-to-br from-lagoon via-lagoon/95 to-forest/80 py-16 text-white dark:border-white/10">
-    <div class="mx-auto max-w-6xl px-4 text-center">
-        <p class="text-xs uppercase tracking-[0.35em] text-emerald-200/90">Governance & accountability</p>
-        <h1 class="mt-4 font-serif text-4xl sm:text-5xl">Forum officials & leadership</h1>
-        <p class="mx-auto mt-4 max-w-2xl text-base text-slate-200 sm:text-lg">
-            The men and women stewarding transparency, ward representation, and dignified partnerships
-            across Kiambu-Karai. Hover a portrait for extended responsibilities — tap on mobile.
-        </p>
+<section class="officials-hero-mesh relative overflow-hidden text-white">
+    <div class="officials-grid-pattern absolute inset-0 opacity-60"></div>
+    <div class="officials-float pointer-events-none absolute -left-20 top-10 h-56 w-56 rounded-full bg-gold/20 blur-3xl"></div>
+    <div class="pointer-events-none absolute -right-16 bottom-0 h-72 w-72 rounded-full bg-royal/25 blur-3xl"></div>
+
+    <div class="relative mx-auto max-w-7xl px-4 py-16 sm:py-20 lg:py-24">
+        <div class="mx-auto max-w-4xl text-center">
+            <p class="animate__animated animate__fadeInDown inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-1.5 text-[0.65rem] font-bold uppercase tracking-[0.35em] text-emerald-100 backdrop-blur">
+                <i class="fa-solid fa-landmark"></i> Governance & accountability
+            </p>
+            <h1 class="animate__animated animate__fadeInUp mt-6 font-serif text-4xl leading-tight sm:text-5xl lg:text-6xl">
+                Faces behind Kiambu-Karai empowerment
+            </h1>
+            <p class="animate__animated animate__fadeInUp animate__delay-1s mx-auto mt-5 max-w-2xl text-base text-slate-100/90 sm:text-lg">
+                Elected stewards and specialist leads working openly for wards, SACCOs, and community partners across the county.
+            </p>
+        </div>
+
+        <div class="animate__animated animate__fadeInUp animate__delay-2s mx-auto mt-10 grid max-w-3xl grid-cols-1 gap-3 min-[420px]:grid-cols-3 sm:gap-4">
+            <div class="rounded-2xl border border-white/20 bg-white/10 px-3 py-4 text-center backdrop-blur sm:px-4">
+                <p class="font-serif text-2xl sm:text-3xl">{{ executive_officials|length }}</p>
+                <p class="mt-1 text-[0.6rem] font-semibold uppercase tracking-wider text-emerald-200/90 sm:text-xs">Executive board</p>
+            </div>
+            <div class="rounded-2xl border border-white/20 bg-white/10 px-3 py-4 text-center backdrop-blur sm:px-4">
+                <p class="font-serif text-2xl sm:text-3xl">{{ extended_officials|length }}</p>
+                <p class="mt-1 text-[0.6rem] font-semibold uppercase tracking-wider text-emerald-200/90 sm:text-xs">Secretariat leads</p>
+            </div>
+            <div class="rounded-2xl border border-gold/40 bg-gold/15 px-3 py-4 text-center backdrop-blur sm:col-span-3 sm:mx-auto sm:max-w-md sm:px-4 lg:col-span-1 lg:mx-0 lg:max-w-none [&_a]:text-white [&_a]:hover:text-gold [&_span]:text-white/50">
+                <p class="font-serif text-base leading-snug sm:text-lg">{% include "includes/contact_phones.html" %}</p>
+                <p class="mt-1 text-[0.6rem] font-semibold uppercase tracking-wider text-gold/90 sm:text-xs">Reach us</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="relative flex justify-center pb-6">
+        <a href="#executive-board" class="flex flex-col items-center gap-1 text-[0.65rem] uppercase tracking-[0.3em] text-white/70 transition hover:text-white">
+            <span>Meet the team</span>
+            <i class="fa-solid fa-chevron-down animate-bounce text-sm"></i>
+        </a>
     </div>
 </section>
 {% endblock %}
 
 {% block content %}
-<section class="mx-auto max-w-7xl px-4 py-16 space-y-20">
-    <div class="text-center max-w-3xl mx-auto">
-        <p class="text-xs uppercase tracking-[0.3em] text-forest">Executive board</p>
-        <h2 class="mt-2 font-serif text-3xl text-lagoon dark:text-white">Elected leadership</h2>
-        <p class="mt-3 text-sm text-slate-600 dark:text-slate-300">
-            Five core officers mandated by the KKEF constitution to guide strategy, records, treasury, and programme verification.
+<section id="executive-board" class="relative mx-auto max-w-7xl px-4 py-14 sm:py-20" x-data="officialsReveal()" x-init="init()">
+    <div
+        class="text-center transition duration-700"
+        :class="visible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'"
+    >
+        <p class="text-xs font-bold uppercase tracking-[0.35em] text-forest">Executive board</p>
+        <h2 class="mt-3 font-serif text-3xl text-lagoon dark:text-white sm:text-4xl">Elected leadership</h2>
+        <p class="mx-auto mt-3 max-w-2xl text-sm text-slate-600 dark:text-slate-300 sm:text-base">
+            Constitutionally mandated officers guiding strategy, records, treasury, and programme verification.
         </p>
     </div>
 
-    <div class="grid gap-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+    <div
+        class="mt-10 grid grid-cols-1 gap-6 transition duration-700 delay-100 sm:mt-12 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4 lg:gap-6"
+        :class="visible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'"
+    >
         {% for official in executive_officials %}
-        {% include "public/includes/official_card.html" with official=official large=True %}
+            <div class="{% if forloop.first %}sm:col-span-2 lg:col-span-2{% endif %} min-w-0">
+                {% include "public/includes/official_card.html" with official=official featured=forloop.first %}
+            </div>
+        {% empty %}
+            <p class="col-span-full rounded-3xl border border-dashed border-slate-300 p-12 text-center text-slate-500 dark:border-white/20">
+                Leadership profiles will appear here once published in the control center.
+            </p>
         {% endfor %}
     </div>
+</section>
 
-    <div class="border-t border-white/40 pt-16 dark:border-white/10">
-        <div class="text-center max-w-3xl mx-auto">
-            <p class="text-xs uppercase tracking-[0.3em] text-royal">Extended secretariat</p>
-            <h2 class="mt-2 font-serif text-3xl text-lagoon dark:text-white">Programme & advisory leads</h2>
-            <p class="mt-3 text-sm text-slate-600 dark:text-slate-300">
-                Specialists supporting gender inclusion, youth innovation, communications, delivery, and legal probity.
+<section class="relative overflow-hidden border-y border-white/40 bg-gradient-to-b from-forest/5 via-white/80 to-royal/5 py-14 dark:border-white/10 dark:from-forest/10 dark:via-lagoon/30 dark:to-royal/10 sm:py-20">
+    <div class="pointer-events-none absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%2315803d\' fill-opacity=\'0.06\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-50"></div>
+
+    <div class="relative mx-auto max-w-7xl px-4" x-data="officialsReveal()" x-init="init()">
+        <div
+            class="text-center transition duration-700"
+            :class="visible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'"
+        >
+            <p class="text-xs font-bold uppercase tracking-[0.35em] text-royal">Extended secretariat</p>
+            <h2 class="mt-3 font-serif text-3xl text-lagoon dark:text-white sm:text-4xl">Programme & advisory leads</h2>
+            <p class="mx-auto mt-3 max-w-2xl text-sm text-slate-600 dark:text-slate-300 sm:text-base">
+                Specialists in inclusion, youth innovation, communications, delivery, and legal probity.
             </p>
         </div>
 
-        <div class="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+        <div
+            class="mt-10 grid grid-cols-1 gap-6 transition duration-700 delay-150 sm:mt-12 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8"
+            :class="visible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'"
+        >
             {% for official in extended_officials %}
-            {% include "public/includes/official_card.html" with official=official large=False %}
+                <div class="min-w-0">
+                    {% include "public/includes/official_card.html" with official=official featured=False %}
+                </div>
+            {% empty %}
+                <p class="col-span-full text-center text-slate-500">No secretariat profiles published yet.</p>
             {% endfor %}
         </div>
     </div>
+</section>
 
-    <div class="rounded-3xl border border-white/50 bg-white/90 p-8 text-center backdrop-blur dark:border-white/10 dark:bg-white/5">
-        <h3 class="font-serif text-2xl text-lagoon dark:text-white">Engage leadership responsibly</h3>
-        <p class="mx-auto mt-3 max-w-xl text-sm text-slate-600 dark:text-slate-300">
-            For official correspondence, ward escalations, or media enquiries, call the secretariat:
-            <span class="mt-2 block font-semibold">{% include "includes/contact_phones.html" %}</span>
-        </p>
-        <div class="mt-6 flex flex-wrap justify-center gap-4">
-            <a href="{% url 'core:about' %}" class="rounded-full border border-lagoon/15 px-6 py-2.5 text-xs font-semibold uppercase tracking-wide text-lagoon hover:border-forest hover:text-forest dark:border-white/20 dark:text-white">About KKEF</a>
-            <a href="{% url 'core:donate_portal' %}" class="rounded-full bg-gradient-to-r from-forest to-royal px-6 py-2.5 text-xs font-semibold uppercase tracking-wide text-white shadow-lg">Partner with us</a>
+<section class="mx-auto max-w-7xl px-4 py-14 sm:py-20">
+    <div class="overflow-hidden rounded-[2rem] border border-white/50 bg-gradient-to-br from-lagoon via-lagoon to-forest p-8 text-center text-white shadow-2xl shadow-forest/20 sm:p-12 lg:flex lg:items-center lg:justify-between lg:text-left">
+        <div class="lg:max-w-xl">
+            <p class="text-xs font-bold uppercase tracking-[0.3em] text-emerald-200">Get in touch</p>
+            <h3 class="mt-3 font-serif text-2xl sm:text-3xl">Engage leadership responsibly</h3>
+            <p class="mt-3 text-sm text-slate-200 sm:text-base">
+                For official correspondence, ward escalations, or media enquiries, call the KKEF secretariat directly.
+            </p>
+            <p class="mt-5 flex flex-wrap items-center justify-center gap-3 text-lg font-semibold lg:justify-start [&_a]:text-white [&_a]:hover:text-gold [&_span]:text-white/60">
+                <i class="fa-solid fa-phone-volume text-gold"></i>
+                {% include "includes/contact_phones.html" %}
+            </p>
+        </div>
+        <div class="mt-8 flex flex-wrap justify-center gap-3 lg:mt-0 lg:flex-col lg:items-stretch">
+            <a href="{% url 'core:about' %}" class="rounded-2xl border border-white/30 bg-white/10 px-6 py-3 text-center text-xs font-bold uppercase tracking-wider backdrop-blur transition hover:bg-white/20">
+                About KKEF
+            </a>
+            <a href="{% url 'core:donate_portal' %}" class="rounded-2xl bg-gold px-6 py-3 text-center text-xs font-bold uppercase tracking-wider text-lagoon shadow-lg shadow-gold/30 transition hover:bg-white hover:text-lagoon">
+                Partner with us
+            </a>
         </div>
     </div>
 </section>

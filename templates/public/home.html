@@ -8,6 +8,11 @@
       active: 0,
       slides: [
         {
+          kicker: 'Umbrella mandate',
+          title: 'Registered groups, one Kiambu forum',
+          copy: 'KKEF unites every registered community group under a single charter — and pursues donors and sponsors on their behalf to fund ward-level initiatives.'
+        },
+        {
           kicker: 'GIS + giving',
           title: 'Every ward narrated on a live map',
           copy: 'Leaflet + Google Maps layers visualise projects, tree cover, and clean-up routes with county overlays.'
@@ -63,20 +68,35 @@
         </video>
         <div class="absolute inset-0 bg-gradient-to-b from-lagoon/80 via-lagoon/40 to-slate-50 dark:to-[#050914]"></div>
     </div>
-    <div class="relative mx-auto flex max-w-7xl flex-col gap-10 px-4 py-24 lg:flex-row lg:items-center">
+    <div class="relative mx-auto flex max-w-7xl flex-col gap-10 px-4 py-20 sm:py-24 lg:flex-row lg:items-center">
         <div class="w-full space-y-8 lg:w-3/5">
-            <p class="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-4 py-1 text-xs font-semibold uppercase tracking-[0.32em] text-white backdrop-blur animate__animated animate__fadeInDown">
-                County · Community · Capital
+            <p class="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-4 py-1.5 text-[0.65rem] font-bold uppercase tracking-[0.28em] text-emerald-100 backdrop-blur animate__animated animate__fadeInDown sm:text-xs sm:tracking-[0.32em]">
+                <i class="fa-solid fa-people-roof text-gold"></i>
+                Umbrella forum · Kiambu County
             </p>
             <div class="space-y-6 text-white">
                 <h1 class="font-serif text-4xl leading-tight text-white sm:text-5xl lg:text-6xl animate__animated animate__fadeInUp">
-                    Uniting every ward voice under one audit-ready empowerment forum.
+                    The county umbrella for registered groups — and the bridge to donors who fund their work.
                 </h1>
-                <p class="max-w-2xl text-lg text-slate-100 animate__animated animate__fadeInUp animate__delay-1s">
-                    From SACCO liquidity to watershed restoration, KKEF synchronises community groups, county stakeholders, and donor partners with transparent dashboards, live notifications, and institutional-grade controls.
+                <p class="max-w-2xl text-base leading-relaxed text-slate-100 sm:text-lg animate__animated animate__fadeInUp animate__delay-1s">
+                    KKEF serves every registered community organisation in Kiambu under one forum: we steward group initiatives with rigour, represent members with a unified voice, and actively source donors and sponsors on their behalf so local programmes secure the capital they need.
                 </p>
+                <ul class="grid max-w-2xl gap-3 sm:grid-cols-3 animate__animated animate__fadeInUp animate__delay-1s">
+                    <li class="rounded-2xl border border-white/20 bg-white/5 px-4 py-3 backdrop-blur">
+                        <p class="text-[0.65rem] font-bold uppercase tracking-[0.2em] text-gold">Umbrella</p>
+                        <p class="mt-1 text-xs leading-snug text-white/85 sm:text-sm">One charter for all registered groups in Kiambu.</p>
+                    </li>
+                    <li class="rounded-2xl border border-white/20 bg-white/5 px-4 py-3 backdrop-blur">
+                        <p class="text-[0.65rem] font-bold uppercase tracking-[0.2em] text-gold">Outreach</p>
+                        <p class="mt-1 text-xs leading-snug text-white/85 sm:text-sm">Donor and sponsor engagement on behalf of members.</p>
+                    </li>
+                    <li class="rounded-2xl border border-white/20 bg-white/5 px-4 py-3 backdrop-blur sm:col-span-1">
+                        <p class="text-[0.65rem] font-bold uppercase tracking-[0.2em] text-gold">Funding</p>
+                        <p class="mt-1 text-xs leading-snug text-white/85 sm:text-sm">Transparent capital flows into group-led initiatives.</p>
+                    </li>
+                </ul>
             </div>
-            <div class="flex flex-wrap gap-4 animate__animated animate__fadeInUp animate__delay-2s">
+            <div class="flex flex-wrap gap-3 sm:gap-4 animate__animated animate__fadeInUp animate__delay-2s">
                 <a href="{% url 'core:donate_portal' %}#join-group" class="rounded-full bg-white px-6 py-3 text-sm font-semibold text-lagoon shadow-lg shadow-black/40">Join forum</a>
                 <a href="{% url 'core:proposals_portal' %}" class="rounded-full border border-white/50 px-6 py-3 text-sm font-semibold text-white hover:bg-white/10">Submit project</a>
                 <a href="{% url 'core:donate_portal' %}" class="rounded-full bg-gradient-to-r from-gold via-forest to-royal px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-gold/30">Donate</a>
@@ -105,24 +125,24 @@
 {% endblock %}
 
 {% block content %}
-<section class="mx-auto mt-16 max-w-7xl px-4" x-data="counterTiles({{ stats.groups }}, {{ stats.projects }}, {{ stats.beneficiaries }}, {{ stats.trees }})" x-init="animate()">
+<section class="kkef-page mx-auto mt-12 max-w-7xl px-4 sm:mt-16" x-data="counterTiles({{ stats.groups }}, {{ stats.projects }}, {{ stats.beneficiaries }}, {{ stats.trees }})" x-init="animate()">
     <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <article class="rounded-3xl border border-white/50 bg-white/80 p-6 shadow-xl shadow-lagoon/5 backdrop-blur dark:border-white/10 dark:bg-white/5">
+        <article class="kkef-kpi">
             <p class="text-xs uppercase tracking-[0.3em] text-forest">Groups united</p>
             <p class="mt-4 font-serif text-4xl text-lagoon dark:text-white" x-text="Math.round(groups)"></p>
             <p class="mt-2 text-sm text-slate-500 dark:text-slate-300">CBOs · SACCOs · youth & women desks</p>
         </article>
-        <article class="rounded-3xl border border-white/50 bg-white/80 p-6 shadow-xl shadow-lagoon/5 backdrop-blur dark:border-white/10 dark:bg-white/5">
+        <article class="kkef-kpi">
             <p class="text-xs uppercase tracking-[0.3em] text-royal">Flagship projects</p>
             <p class="mt-4 font-serif text-4xl text-lagoon dark:text-white" x-text="Math.round(projects)"></p>
             <p class="mt-2 text-sm text-slate-500 dark:text-slate-300">GIS tagged · SDG coded</p>
         </article>
-        <article class="rounded-3xl border border-white/50 bg-white/80 p-6 shadow-xl shadow-lagoon/5 backdrop-blur dark:border-white/10 dark:bg-white/5">
+        <article class="kkef-kpi">
             <p class="text-xs uppercase tracking-[0.3em] text-gold">Household reach</p>
             <p class="mt-4 font-serif text-4xl text-lagoon dark:text-white" x-text="Math.round(beneficiaries).toLocaleString()"></p>
             <p class="mt-2 text-sm text-slate-500 dark:text-slate-300">Verified through ward enumerators</p>
         </article>
-        <article class="rounded-3xl border border-white/50 bg-white/80 p-6 shadow-xl shadow-lagoon/5 backdrop-blur dark:border-white/10 dark:bg-white/5">
+        <article class="kkef-kpi">
             <p class="text-xs uppercase tracking-[0.3em] text-forest">Trees & nurseries</p>
             <p class="mt-4 font-serif text-4xl text-lagoon dark:text-white" x-text="Math.round(trees).toLocaleString()"></p>
             <p class="mt-2 text-sm text-slate-500 dark:text-slate-300">Citizen science + county GIS</p>
@@ -130,9 +150,9 @@
     </div>
 </section>
 
-<section class="mx-auto mt-20 max-w-7xl px-4" x-data="{shift:0}" @scroll.window="shift = window.scrollY * 0.04">
+<section class="kkef-page mx-auto mt-16 max-w-7xl px-4 sm:mt-20" x-data="{shift:0}" @scroll.window="shift = window.scrollY * 0.04">
     <div class="grid gap-10 lg:grid-cols-2">
-        <div class="space-y-6 rounded-[32px] border border-white/40 bg-white/90 p-10 shadow-2xl shadow-lagoon/10 backdrop-blur-xl dark:border-white/10 dark:bg-white/5" :style="`transform: translateY(${shift * -0.2}px)`">
+        <div class="kkef-glass space-y-6 p-8 shadow-2xl sm:p-10" :style="`transform: translateY(${shift * -0.2}px)`">
             <p class="text-xs uppercase tracking-[0.32em] text-forest">About KKEF</p>
             <h2 class="font-serif text-3xl text-lagoon dark:text-white">An umbrella for every community enterprise.</h2>
             <p class="text-slate-600 dark:text-slate-300">We choreograph county technical teams, philanthropic partners, and hyper-local leaders into a single empowerment stack: projects, proposals, verified giving, and field intelligence.</p>
@@ -154,12 +174,12 @@
             </ul>
         </div>
         <div class="space-y-6">
-            <div class="rounded-[32px] border border-white/30 bg-gradient-to-br from-lagoon via-lagoon to-forest p-8 text-white shadow-2xl">
+            <div class="rounded-[1.75rem] border border-white/30 bg-gradient-to-br from-lagoon via-lagoon to-forest p-6 text-white shadow-2xl sm:p-8">
                 <p class="text-xs uppercase tracking-[0.3em] text-white/70">Leadership philosophy</p>
                 <p class="mt-4 font-serif text-3xl">Rotating stewardship with audited decision trails.</p>
                 <p class="mt-4 text-sm text-white/80">Forum administrators curate approvals, group leaders steward field truth, donors track capital outcomes, while stakeholders digitally co-sign major escalations.</p>
             </div>
-            <div class="rounded-[32px] border border-white/40 bg-white/90 p-6 backdrop-blur dark:border-white/10 dark:bg-white/5">
+            <div class="kkef-glass p-6">
                 <p class="text-xs uppercase tracking-[0.3em] text-forest">Partner organizations</p>
                 <div class="mt-4 flex flex-wrap gap-3 text-sm text-slate-600 dark:text-slate-300">
                     <span class="rounded-full bg-slate-100 px-3 py-1 dark:bg-white/10">County GIS desk</span>
@@ -172,7 +192,7 @@
     </div>
 </section>
 
-<section class="mx-auto mt-20 max-w-7xl px-4">
+<section class="kkef-page mx-auto mt-16 max-w-7xl px-4 sm:mt-20">
     <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
             <p class="text-xs uppercase tracking-[0.3em] text-forest">Community projects</p>
@@ -182,7 +202,7 @@
     </div>
     <div class="mt-8 grid gap-6 md:grid-cols-3">
         {% for project in featured_projects %}
-            <article class="group rounded-3xl border border-white/40 bg-white/90 p-6 shadow-xl shadow-lagoon/5 backdrop-blur transition hover:-translate-y-1 dark:border-white/10 dark:bg-white/5">
+            <article class="kkef-glass kkef-glass-hover group p-6">
                 <p class="text-xs uppercase tracking-wide text-forest">{{ project.get_status_display }}</p>
                 <h4 class="mt-3 font-semibold text-lg text-lagoon group-hover:text-forest dark:text-white">{{ project.title }}</h4>
                 <p class="mt-2 text-sm text-slate-600 line-clamp-3 dark:text-slate-300">{{ project.description }}</p>
@@ -202,13 +222,13 @@
     </div>
 </section>
 
-<section class="mx-auto mt-20 max-w-7xl px-4 grid gap-6 lg:grid-cols-2">
-    <div class="rounded-[32px] border border-white/40 bg-white/90 p-8 backdrop-blur dark:border-white/10 dark:bg-white/5">
+<section class="kkef-page mx-auto mt-16 max-w-7xl grid gap-6 px-4 sm:mt-20 lg:grid-cols-2">
+    <div class="kkef-glass p-6 sm:p-8">
         <p class="text-xs uppercase tracking-[0.3em] text-gold">Success stories</p>
         <h3 class="mt-4 font-serif text-3xl text-lagoon dark:text-white">“We now negotiate with investors carrying live dashboards.”</h3>
         <p class="mt-4 text-sm text-slate-600 dark:text-slate-300">Oasis Fish Farmers leveraged the proposal assistant, digital signatures, and donor transparency widgets to unlock blended finance for cold-chain pilots.</p>
     </div>
-    <div class="rounded-[32px] border border-lagoon/20 bg-gradient-to-br from-white to-slate-50 p-8 dark:from-lagoon/40 dark:to-[#040912]">
+    <div class="kkef-glass border-lagoon/20 bg-gradient-to-br from-white to-slate-50 p-6 dark:from-lagoon/40 dark:to-[#040912] sm:p-8">
         <p class="text-xs uppercase tracking-[0.3em] text-royal">Testimonials</p>
         <div class="mt-6 space-y-6">
             <blockquote class="border-l-4 border-gold pl-4 text-slate-700 dark:text-slate-200">“County teams finally share a GIS layer with community monitors—no more siloed PDFs.”</blockquote>
@@ -217,9 +237,9 @@
     </div>
 </section>
 
-<section class="mx-auto mt-20 max-w-7xl px-4 grid gap-6 lg:grid-cols-2">
-    <div class="rounded-[32px] border border-white/40 bg-white/90 p-8 backdrop-blur dark:border-white/10 dark:bg-white/5">
-        <div class="flex items-center justify-between">
+<section class="kkef-page mx-auto mt-16 max-w-7xl grid gap-6 px-4 sm:mt-20 lg:grid-cols-2">
+    <div class="kkef-glass p-6 sm:p-8">
+        <div class="flex flex-wrap items-center justify-between gap-3">
             <h3 class="font-serif text-2xl text-lagoon dark:text-white">News & updates</h3>
             <a class="text-sm font-semibold text-royal" href="{% url 'core:media_portal' %}">Newsroom</a>
         </div>
@@ -235,8 +255,8 @@
             {% endfor %}
         </ul>
     </div>
-    <div class="rounded-[32px] border border-white/40 bg-white/90 p-8 backdrop-blur dark:border-white/10 dark:bg-white/5">
-        <div class="flex items-center justify-between">
+    <div class="kkef-glass p-6 sm:p-8">
+        <div class="flex flex-wrap items-center justify-between gap-3">
             <h3 class="font-serif text-2xl text-lagoon dark:text-white">Upcoming events</h3>
             <a class="text-sm font-semibold text-royal" href="{% url 'core:events_portal' %}">RSVP desk</a>
         </div>
@@ -257,8 +277,8 @@
     </div>
 </section>
 
-<section class="mx-auto mt-20 max-w-7xl px-4">
-    <div class="rounded-[36px] border border-white/50 bg-gradient-to-r from-lagoon via-lagoon to-forest p-10 text-white shadow-2xl">
+<section class="kkef-page mx-auto mt-16 max-w-7xl px-4 sm:mt-20">
+    <div class="rounded-[1.75rem] border border-white/50 bg-gradient-to-r from-lagoon via-lagoon to-forest p-6 text-white shadow-2xl sm:p-10">
         <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div>
                 <p class="text-xs uppercase tracking-[0.3em] text-white/70">Sponsors & donors</p>
@@ -274,28 +294,28 @@
     </div>
 </section>
 
-<section class="mx-auto mt-16 max-w-7xl px-4 grid gap-6 md:grid-cols-3">
-    <article class="rounded-3xl border border-white/40 bg-white/90 p-6 backdrop-blur dark:border-white/10 dark:bg-white/5">
+<section class="kkef-page mx-auto mt-12 max-w-7xl grid gap-6 px-4 sm:mt-16 md:grid-cols-3">
+    <article class="kkef-glass kkef-glass-hover p-6">
         <p class="text-xs uppercase text-forest">Environmental activities</p>
         <p class="mt-3 text-sm text-slate-600 dark:text-slate-300">Bio-enterprise corridors, riparian rehab, youth-led biodiversity observatories.</p>
     </article>
-    <article class="rounded-3xl border border-white/40 bg-white/90 p-6 backdrop-blur dark:border-white/10 dark:bg-white/5">
+    <article class="kkef-glass kkef-glass-hover p-6">
         <p class="text-xs uppercase text-royal">Youth empowerment</p>
         <p class="mt-3 text-sm text-slate-600 dark:text-slate-300">Mentorship pods, civic-tech labs, digital gig markets aligned to county plans.</p>
     </article>
-    <article class="rounded-3xl border border-white/40 bg-white/90 p-6 backdrop-blur dark:border-white/10 dark:bg-white/5">
+    <article class="kkef-glass kkef-glass-hover p-6">
         <p class="text-xs uppercase text-gold">Women & fish farmers</p>
         <p class="mt-3 text-sm text-slate-600 dark:text-slate-300">Gender-lens finance, aquaculture cold chains, cooperative governance academies.</p>
     </article>
 </section>
 
-<section class="mx-auto mt-16 max-w-7xl px-4">
-    <div class="rounded-[32px] border border-dashed border-forest/40 bg-forest/5 p-8 text-center dark:border-white/20 dark:bg-white/5">
+<section class="kkef-page mx-auto mt-12 max-w-7xl px-4 pb-16 sm:mt-16 sm:pb-20">
+    <div class="kkef-glass border-dashed border-forest/40 bg-forest/5 p-6 text-center dark:border-white/20 dark:bg-white/5 sm:p-8">
         <p class="text-xs uppercase tracking-[0.3em] text-forest">Tree planting & clean-ups</p>
-        <h3 class="mt-4 font-serif text-3xl text-lagoon dark:text-white">Mobilise volunteers with QR-coded attendance and photo evidence chains.</h3>
-        <div class="mt-6 flex flex-wrap justify-center gap-4 text-sm">
-            <a class="rounded-full bg-lagoon px-5 py-2 text-white" href="{% url 'core:events_portal' %}">Plan a clean-up</a>
-            <a class="rounded-full border border-lagoon/30 px-5 py-2 text-lagoon dark:text-white" href="{% url 'core:maps_portal' %}">Open GIS layer</a>
+        <h3 class="mt-4 font-serif text-2xl text-lagoon dark:text-white sm:text-3xl">Mobilise volunteers with QR-coded attendance and photo evidence chains.</h3>
+        <div class="mt-6 flex flex-wrap justify-center gap-3 text-sm sm:gap-4">
+            <a class="kkef-btn-primary" href="{% url 'core:events_portal' %}">Plan a clean-up</a>
+            <a class="inline-flex items-center justify-center rounded-full border border-lagoon/30 px-5 py-2.5 text-xs font-bold uppercase tracking-wide text-lagoon dark:text-white" href="{% url 'core:maps_portal' %}">Open GIS layer</a>
         </div>
     </div>
 </section>

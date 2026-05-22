@@ -1,0 +1,25 @@
+<section class="kkef-hero kkef-hero--{{ variant|default:'forest' }} relative overflow-hidden text-white">
+    <div class="kkef-hero-grid absolute inset-0 opacity-60"></div>
+    <div class="pointer-events-none absolute -left-16 top-8 h-48 w-48 rounded-full bg-gold/20 blur-3xl"></div>
+    <div class="pointer-events-none absolute -right-12 bottom-0 h-56 w-56 rounded-full bg-royal/25 blur-3xl"></div>
+
+    <div class="relative mx-auto max-w-7xl px-4 py-14 sm:py-18 lg:py-20">
+        <div class="mx-auto max-w-4xl text-center">
+            {% if kicker %}
+            <p class="animate__animated animate__fadeInDown inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-1.5 text-[0.65rem] font-bold uppercase tracking-[0.32em] text-emerald-100 backdrop-blur">
+                {% if icon %}<i class="fa-solid {{ icon }}"></i>{% endif %}
+                {{ kicker }}
+            </p>
+            {% endif %}
+            <h1 class="animate__animated animate__fadeInUp mt-5 font-serif text-3xl leading-tight sm:text-4xl lg:text-5xl">{{ title }}</h1>
+            {% if subtitle %}
+            <p class="animate__animated animate__fadeInUp animate__delay-1s mx-auto mt-4 max-w-2xl text-sm text-slate-100/90 sm:text-base lg:text-lg">{{ subtitle }}</p>
+            {% endif %}
+            {% if cta_url and cta_label %}
+            <div class="animate__animated animate__fadeInUp animate__delay-2s mt-8 flex flex-wrap justify-center gap-3">
+                <a href="{{ cta_url }}" class="kkef-btn-primary">{{ cta_label }}</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>

@@ -1,34 +1,33 @@
 {% extends "base.html" %}
 {% block title %}Analytics observatory · KKEF{% endblock %}
-{% block content %}
-<section class="mx-auto max-w-6xl px-4 py-16 space-y-8">
-    <div>
-        <p class="text-xs uppercase tracking-[0.3em] text-forest">Transparency</p>
-        <h1 class="font-serif text-3xl text-lagoon dark:text-white">Analytics observatory</h1>
-        <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">Public KPI tiles refreshed from live forum data.</p>
-    </div>
 
-    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <div class="rounded-3xl border border-white/50 bg-white/90 p-6 dark:border-white/10 dark:bg-white/5">
-            <p class="text-xs uppercase tracking-wide text-slate-500">Published groups</p>
-            <p class="mt-2 font-serif text-3xl text-lagoon dark:text-white">{{ tiles.grouped_cbos }}</p>
-        </div>
-        <div class="rounded-3xl border border-white/50 bg-white/90 p-6 dark:border-white/10 dark:bg-white/5">
-            <p class="text-xs uppercase tracking-wide text-slate-500">Active projects</p>
-            <p class="mt-2 font-serif text-3xl text-lagoon dark:text-white">{{ tiles.portfolio_projects }}</p>
-        </div>
-        <div class="rounded-3xl border border-white/50 bg-white/90 p-6 dark:border-white/10 dark:bg-white/5">
-            <p class="text-xs uppercase tracking-wide text-slate-500">Verified giving (KES)</p>
-            <p class="mt-2 font-serif text-3xl text-lagoon dark:text-white">{{ tiles.verified_giving_kes|floatformat:0 }}</p>
-        </div>
-        <div class="rounded-3xl border border-white/50 bg-white/90 p-6 dark:border-white/10 dark:bg-white/5">
-            <p class="text-xs uppercase tracking-wide text-slate-500">Governance queue</p>
-            <p class="mt-2 font-serif text-3xl text-lagoon dark:text-white">{{ tiles.governance_queues }}</p>
-        </div>
+{% block hero %}
+{% include "includes/page_hero.html" with kicker="Transparency" title="Analytics observatory" subtitle="Public KPI tiles refreshed from live forum data." icon="fa-chart-pie" variant="royal" %}
+{% endblock %}
+
+{% block content %}
+<section class="kkef-page mx-auto max-w-7xl px-4 py-14 sm:py-20 space-y-8" x-data="pageReveal()" x-init="init()">
+    <div class="grid grid-cols-1 gap-4 min-[420px]:grid-cols-2 lg:grid-cols-4 lg:gap-6" :class="visible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'" style="transition: duration 0.7s;">
+        <article class="kkef-kpi">
+            <p class="text-xs font-bold uppercase tracking-wider text-slate-500">Published groups</p>
+            <p class="mt-3 font-serif text-4xl text-forest">{{ tiles.grouped_cbos }}</p>
+        </article>
+        <article class="kkef-kpi">
+            <p class="text-xs font-bold uppercase tracking-wider text-slate-500">Active projects</p>
+            <p class="mt-3 font-serif text-4xl text-royal">{{ tiles.portfolio_projects }}</p>
+        </article>
+        <article class="kkef-kpi">
+            <p class="text-xs font-bold uppercase tracking-wider text-slate-500">Verified giving (KES)</p>
+            <p class="mt-3 font-serif text-3xl text-gold">{{ tiles.verified_giving_kes|floatformat:0 }}</p>
+        </article>
+        <article class="kkef-kpi">
+            <p class="text-xs font-bold uppercase tracking-wider text-slate-500">Governance queue</p>
+            <p class="mt-3 font-serif text-4xl text-lagoon dark:text-white">{{ tiles.governance_queues }}</p>
+        </article>
     </div>
 
     {% if user.is_authenticated and user.is_staff %}
-    <p class="text-xs text-slate-500">Executive pulse charts are available to forum admins via <code class="rounded bg-slate-100 px-1 dark:bg-white/10">/api/v1/analytics/executive/</code>.</p>
+    <p class="kkef-glass p-4 text-xs text-slate-500">Executive charts available to forum admins in the <a href="{% url 'core:manage_dashboard' %}" class="font-semibold text-forest hover:underline">Control center</a>.</p>
     {% else %}
     {% include "includes/portal_sign_in_banner.html" %}
     {% endif %}

@@ -1,83 +1,83 @@
 <article
-    class="official-card group relative flex flex-col items-center rounded-3xl border border-white/50 bg-white/90 p-6 text-center shadow-lg shadow-lagoon/5 backdrop-blur transition hover:-translate-y-1 dark:border-white/10 dark:bg-white/5"
-    tabindex="0"
-    x-data="{ open: false }"
-    @click="if (window.matchMedia('(max-width: 767px)').matches) open = !open"
-    :class="open ? 'is-open' : ''"
-    @keydown.escape="open = false"
+    class="official-profile group relative flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-white/60 bg-white/95 shadow-xl shadow-lagoon/10 backdrop-blur-xl transition duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-forest/15 dark:border-white/10 dark:bg-lagoon/80 dark:shadow-black/30 {% if featured %}lg:min-h-[520px]{% endif %}"
+    x-data="{ expanded: false }"
 >
-    <div class="relative mb-5">
-        <div class="avatar-ring overflow-hidden rounded-full ring-4 ring-forest/20 transition duration-300 {% if large %}h-36 w-36{% else %}h-28 w-28{% endif %}">
-            <img
-                src="{{ official.photo_url }}"
-                alt="Portrait of {{ official.name }}, {{ official.role }}"
-                width="256"
-                height="256"
-                class="h-full w-full object-cover transition duration-500 group-hover:scale-105"
-                loading="lazy"
-            >
+    <div class="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full bg-gradient-to-br from-forest/20 to-gold/20 blur-2xl transition group-hover:scale-150"></div>
+
+    <div class="relative {% if featured %}aspect-[5/4] sm:aspect-[4/3]{% else %}aspect-[4/5] sm:aspect-square{% endif %} w-full overflow-hidden">
+        <img
+            src="{{ official.photo_url }}"
+            alt="Portrait of {{ official.name }}, {{ official.role }}"
+            width="400"
+            height="400"
+            class="h-full w-full object-cover transition duration-700 group-hover:scale-110"
+            loading="lazy"
+        >
+        <div class="absolute inset-0 bg-gradient-to-t from-lagoon via-lagoon/20 to-transparent"></div>
+        <div class="absolute left-0 right-0 top-4 flex justify-between px-4">
+            <span class="inline-flex items-center gap-1.5 rounded-full bg-white/95 px-3 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-forest shadow-lg dark:bg-lagoon/90 dark:text-emerald-300">
+                <i class="fa-solid fa-shield-heart text-gold"></i>
+                KKEF
+            </span>
+            {% if featured %}
+            <span class="rounded-full bg-gold/90 px-3 py-1 text-[0.6rem] font-bold uppercase tracking-wider text-lagoon">Leadership</span>
+            {% endif %}
         </div>
-        <span class="absolute -bottom-1 -right-1 flex h-9 w-9 items-center justify-center rounded-full bg-forest text-white shadow-lg">
-            <i class="fa-solid fa-user-tie text-xs"></i>
-        </span>
+        <div class="absolute bottom-0 left-0 right-0 p-4 sm:p-5">
+            <p class="text-[0.65rem] font-semibold uppercase tracking-[0.22em] text-emerald-300">{{ official.role }}</p>
+            <h3 class="font-serif text-xl text-white sm:text-2xl {% if featured %}lg:text-3xl{% endif %}">{{ official.name }}</h3>
+            <p class="mt-1 text-sm font-medium text-gold/95">{{ official.tagline }}</p>
+        </div>
     </div>
 
-    <p class="text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-forest">{{ official.role }}</p>
-    <h3 class="mt-1 font-serif text-lg text-lagoon dark:text-white">{{ official.name }}</h3>
-    <p class="mt-1 text-xs font-medium text-gold">{{ official.tagline }}</p>
+    <div class="relative flex flex-1 flex-col p-4 sm:p-5">
+        <p class="flex-1 text-sm leading-relaxed text-slate-600 dark:text-slate-300 {% if featured %}sm:text-base{% endif %}">
+            {{ official.bio }}
+        </p>
 
-    <p class="mt-4 text-left text-sm leading-relaxed text-slate-600 dark:text-slate-300 sm:text-center">
-        {{ official.bio }}
-    </p>
+        <button
+            type="button"
+            @click="expanded = !expanded"
+            :aria-expanded="expanded"
+            class="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-forest/20 bg-forest/5 py-3 text-xs font-bold uppercase tracking-wider text-forest transition hover:bg-forest hover:text-white dark:border-emerald-500/30 dark:bg-white/5 dark:text-emerald-300 dark:hover:bg-forest"
+        >
+            <span x-text="expanded ? 'Hide profile' : 'View full profile'"></span>
+            <i class="fa-solid text-[0.7rem] transition" :class="expanded ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+        </button>
 
-    <p class="mt-3 text-[0.65rem] uppercase tracking-wider text-slate-400 group-hover:text-forest dark:group-hover:text-emerald-300">
-        <i class="fa-solid fa-hand-pointer mr-1"></i> Hover for full profile
-    </p>
-
-    <div
-        class="hover-panel pointer-events-none absolute inset-0 z-10 flex flex-col justify-end rounded-3xl bg-gradient-to-t from-lagoon via-lagoon/95 to-lagoon/70 p-5 text-left text-white opacity-0 transition duration-300"
-        role="tooltip"
-        :aria-hidden="!open"
-    >
-        <div class="mb-auto pt-2">
-            <p class="text-[0.65rem] uppercase tracking-[0.25em] text-emerald-300">Extended profile</p>
-            <h4 class="mt-1 font-serif text-xl">{{ official.name }}</h4>
-            <p class="text-sm text-emerald-100/90">{{ official.role }}</p>
-        </div>
-
-        <dl class="space-y-3 text-sm">
+        <div
+            x-show="expanded"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 -translate-y-2"
+            x-transition:enter-end="opacity-100 translate-y-0"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            x-cloak
+            class="mt-4 space-y-4 rounded-2xl border border-forest/15 bg-gradient-to-br from-slate-50 to-forest/5 p-4 dark:border-white/10 dark:from-white/5 dark:to-lagoon/40"
+        >
             {% if official.tenure %}
             <div>
-                <dt class="text-[0.65rem] uppercase tracking-wider text-emerald-300/80">Tenure</dt>
-                <dd class="text-slate-100">{{ official.tenure }}</dd>
+                <p class="text-[0.65rem] font-bold uppercase tracking-wider text-forest dark:text-emerald-400">Tenure</p>
+                <p class="mt-1 text-sm text-lagoon dark:text-slate-200">{{ official.tenure }}</p>
             </div>
             {% endif %}
             {% if official.focus_areas %}
             <div>
-                <dt class="text-[0.65rem] uppercase tracking-wider text-emerald-300/80">Focus areas</dt>
-                <dd>
-                    <ul class="mt-1 flex flex-wrap gap-1.5">
-                        {% for item in official.focus_areas %}
-                        <li class="rounded-full bg-white/15 px-2.5 py-0.5 text-xs">{{ item }}</li>
-                        {% endfor %}
-                    </ul>
-                </dd>
+                <p class="text-[0.65rem] font-bold uppercase tracking-wider text-forest dark:text-emerald-400">Focus areas</p>
+                <ul class="mt-2 flex flex-wrap gap-2">
+                    {% for item in official.focus_areas %}
+                    <li class="rounded-full bg-white px-3 py-1 text-xs font-medium text-lagoon shadow-sm dark:bg-lagoon/60 dark:text-slate-100">{{ item }}</li>
+                    {% endfor %}
+                </ul>
             </div>
             {% endif %}
             <div>
-                <dt class="text-[0.65rem] uppercase tracking-wider text-emerald-300/80">Contact</dt>
-                <dd class="space-y-1 font-medium text-gold">
+                <p class="text-[0.65rem] font-bold uppercase tracking-wider text-forest dark:text-emerald-400">Contact secretariat</p>
+                <p class="mt-2 text-sm font-semibold leading-relaxed">
                     {% include "includes/contact_phones.html" %}
-                </dd>
+                </p>
             </div>
-        </dl>
-
-        <button
-            type="button"
-            class="mt-4 w-full rounded-xl bg-white/10 py-2 text-xs uppercase tracking-wide md:hidden"
-            @click.stop="open = false"
-        >
-            Close
-        </button>
+        </div>
     </div>
 </article>

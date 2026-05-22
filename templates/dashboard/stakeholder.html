@@ -1,21 +1,20 @@
 {% extends "base.html" %}
 {% block title %}Stakeholder console · KKEF{% endblock %}
+
+{% block hero %}
+{% include "includes/page_hero.html" with kicker="Stakeholder" title="Stakeholder console" subtitle="Review proposal queues, attach commentary, and route approvals." icon="fa-briefcase" variant="royal" only %}
+{% endblock %}
+
 {% block content %}
-<section class="mx-auto max-w-5xl px-4 py-16 space-y-6">
-    <h1 class="font-serif text-3xl text-lagoon dark:text-white">Stakeholder console</h1>
-    <p class="text-sm text-slate-600 dark:text-slate-300">
-        Review proposal queues, attach commentary, and route digital signatures through
-        <code class="rounded bg-slate-100 px-1 py-0.5 text-xs dark:bg-white/10">/api/v1/proposals/</code>
-        plus
-        <code class="rounded bg-slate-100 px-1 py-0.5 text-xs dark:bg-white/10">/api/v1/projects/&lt;slug&gt;/approve/</code>.
-    </p>
-    <div class="rounded-3xl border border-white/40 bg-white/90 p-6 backdrop-blur dark:border-white/10 dark:bg-white/5">
-        <p class="text-xs uppercase tracking-[0.3em] text-forest">Next steps</p>
-        <ol class="mt-4 list-decimal space-y-2 pl-5 text-sm text-slate-600 dark:text-slate-300">
-            <li>Authenticate via session or JWT (`/api/auth/jwt/create/`).</li>
-            <li>Filter proposals in `under_review` with `?category=water`.</li>
-            <li>Publish decisions back to notifications for websocket fan-out.</li>
+<section class="kkef-page mx-auto max-w-5xl px-4 py-12 sm:py-16">
+    <div class="kkef-glass p-6 sm:p-8">
+        <p class="text-xs font-bold uppercase tracking-[0.3em] text-forest">Next steps</p>
+        <ol class="mt-4 list-decimal space-y-3 pl-5 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+            <li>Authenticate via session or JWT.</li>
+            <li>Filter proposals in <code class="rounded bg-slate-100 px-1 text-xs dark:bg-white/10">under_review</code>.</li>
+            <li>Publish decisions back to notifications for real-time updates.</li>
         </ol>
+        <a href="{% url 'core:proposals_portal' %}" class="kkef-btn-primary mt-6">Open proposal studio</a>
     </div>
 </section>
 {% endblock %}

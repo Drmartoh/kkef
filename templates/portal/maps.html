@@ -3,15 +3,20 @@
 {% block extra_head %}
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
 {% endblock %}
+
+{% block hero %}
+{% include "includes/page_hero.html" with kicker="Geospatial" title="Ward & project map" subtitle="Groups and projects with coordinates appear as markers. Centre: Karai convergence zone." icon="fa-map-location-dot" variant="forest" %}
+{% endblock %}
+
 {% block content %}
-<section class="mx-auto max-w-6xl px-4 py-16 space-y-6">
-    <div>
-        <p class="text-xs uppercase tracking-[0.3em] text-forest">Geospatial</p>
-        <h1 class="font-serif text-3xl text-lagoon dark:text-white">Ward &amp; project map</h1>
-        <p class="text-sm text-slate-600 dark:text-slate-300">Groups and projects with coordinates appear as markers. Centre: Karai convergence zone.</p>
+<section class="kkef-page mx-auto max-w-7xl px-4 py-14 sm:py-20 space-y-6" x-data="pageReveal()" x-init="init()">
+    <div class="kkef-glass overflow-hidden p-2 sm:p-3" :class="visible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'" style="transition: duration 0.7s;">
+        <div id="kkef-map" class="h-[min(70vh,520px)] min-h-[280px] w-full rounded-2xl sm:rounded-3xl"></div>
     </div>
-    <div id="kkef-map" class="h-[480px] rounded-[32px] border border-white/40 shadow-2xl"></div>
-    <p class="text-xs text-slate-500"><span class="inline-block h-2 w-2 rounded-full bg-forest mr-1"></span> Groups · <span class="inline-block h-2 w-2 rounded-full bg-gold mr-1"></span> Projects</p>
+    <p class="flex flex-wrap items-center justify-center gap-4 text-xs text-slate-500 sm:justify-start">
+        <span><span class="mr-1.5 inline-block h-2.5 w-2.5 rounded-full bg-forest"></span> Groups</span>
+        <span><span class="mr-1.5 inline-block h-2.5 w-2.5 rounded-full bg-gold"></span> Projects</span>
+    </p>
 </section>
 {{ map_markers|json_script:"map-markers-data" }}
 {% endblock %}
@@ -35,20 +40,19 @@
     if (!markers.length) {
       L.circleMarker(center, { radius: 12, color: '#15803d', fillColor: '#d4a017', fillOpacity: 0.7 })
         .addTo(map)
-        .bindPopup('Karai convergence zone — add lat/lng on groups &amp; projects to populate the map.');
+        .bindPopup('Karai convergence zone — add coordinates on groups &amp; projects to populate the map.');
       return;
     }
 
-    const bounds = [];
     markers.forEach((m) => {
       const color = m.kind === 'group' ? '#15803d' : '#d4a017';
-      const marker = L.circleMarker([m.lat, m.lng], { radius: 9, color, fillColor: color, fillOpacity: 0.75 })
+      L.circleMarker([m.lat, m.lng], { radius: 8, color, fillColor: color, fillOpacity: 0.75 })
         .addTo(map)
         .bindPopup(`<strong>${m.label}</strong><br>${m.ward || ''}`);
-      bounds.push([m.lat, m.lng]);
     });
-    if (bounds.length > 1) {
-      map.fitBounds(bounds, { padding: [40, 40] });
+    if (markers.length > 1) {
+      const bounds = L.latLngBounds(markers.map((m) => [m.lat, m.lng]));
+      map.fitBounds(bounds, { padding: [24, 24] });
     }
   });
 </script>

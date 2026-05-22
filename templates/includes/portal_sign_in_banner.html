@@ -1,7 +1,14 @@
 {% if not user.is_authenticated %}
-<div class="rounded-2xl border border-royal/20 bg-royal/5 px-4 py-3 text-sm text-slate-700 dark:border-white/10 dark:bg-white/5 dark:text-slate-200">
-    <p class="font-semibold text-lagoon dark:text-white">Forum member tools</p>
-    <p class="mt-1 text-slate-600 dark:text-slate-300">Sign in to submit proposals, RSVP to events, and access your mission deck.</p>
-    <a href="{% url 'accounts:login' %}?next={{ request.path }}" class="mt-3 inline-flex rounded-full bg-lagoon px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white">Forum login</a>
+<div class="kkef-glass flex flex-col gap-4 border-royal/20 bg-gradient-to-br from-royal/5 to-forest/5 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6 dark:from-royal/10 dark:to-forest/10">
+    <div class="min-w-0">
+        <p class="flex items-center gap-2 font-semibold text-lagoon dark:text-white">
+            <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-royal/15 text-royal dark:bg-white/10 dark:text-emerald-300">
+                <i class="fa-solid fa-lock-open"></i>
+            </span>
+            Forum member tools
+        </p>
+        <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">Sign in to submit proposals, RSVP to events, and open your mission deck.</p>
+    </div>
+    <a href="{% url 'accounts:login' %}?next={{ request.path }}" class="kkef-btn-primary shrink-0">Forum login</a>
 </div>
 {% endif %}

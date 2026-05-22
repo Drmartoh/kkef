@@ -1,28 +1,39 @@
 {% extends "base.html" %}
 {% block title %}Impact · KKEF{% endblock %}
+{% block meta_description %}Live transparency metrics for Kiambu-Karai — groups, projects, verified giving, and governance queues.{% endblock %}
+
+{% block hero %}
+{% include "includes/page_hero.html" with kicker="Impact observatory" title="Transparent metrics for citizens and investors" subtitle="Public KPI tiles refreshed from live forum data — open, ward-level accountability you can verify." icon="fa-chart-line" variant="royal" %}
+{% endblock %}
+
 {% block content %}
-<section class="mx-auto max-w-6xl px-4 py-16 space-y-10" x-data="{tiles:{}}" x-init="prefetchTiles().then(d => tiles = d)">
-    <div>
-        <p class="text-xs uppercase tracking-[0.3em] text-forest">Impact observatory</p>
-        <h1 class="font-serif text-4xl text-lagoon dark:text-white">Transparent metrics for citizens and investors</h1>
+<section class="kkef-page mx-auto max-w-7xl px-4 py-14 sm:py-20" x-data="impactPage()" x-init="init()">
+    <div class="grid grid-cols-1 gap-4 min-[420px]:grid-cols-2 lg:grid-cols-4 lg:gap-6" :class="visible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'" style="transition: duration 0.7s;">
+        <article class="kkef-kpi group">
+            <p class="text-xs font-bold uppercase tracking-wider text-slate-500">Registered groups</p>
+            <p class="mt-3 font-serif text-4xl text-forest transition group-hover:scale-105" x-text="tiles.grouped_cbos ?? '—'"></p>
+        </article>
+        <article class="kkef-kpi group">
+            <p class="text-xs font-bold uppercase tracking-wider text-slate-500">Portfolio projects</p>
+            <p class="mt-3 font-serif text-4xl text-royal transition group-hover:scale-105" x-text="tiles.portfolio_projects ?? '—'"></p>
+        </article>
+        <article class="kkef-kpi group">
+            <p class="text-xs font-bold uppercase tracking-wider text-slate-500">Verified giving (KES)</p>
+            <p class="mt-3 font-serif text-3xl text-gold transition group-hover:scale-105" x-text="tiles.verified_giving_kes ? Number(tiles.verified_giving_kes).toLocaleString() : '—'"></p>
+        </article>
+        <article class="kkef-kpi group">
+            <p class="text-xs font-bold uppercase tracking-wider text-slate-500">Governance queues</p>
+            <p class="mt-3 font-serif text-4xl text-lagoon dark:text-white transition group-hover:scale-105" x-text="tiles.governance_queues ?? '—'"></p>
+        </article>
     </div>
-    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <article class="rounded-3xl border border-white/40 bg-white/90 p-6 backdrop-blur dark:border-white/10 dark:bg-white/5">
-            <p class="text-xs uppercase text-slate-500">Registered groups</p>
-            <p class="mt-3 font-serif text-3xl text-lagoon dark:text-white" x-text="tiles.grouped_cbos ?? '—'"></p>
-        </article>
-        <article class="rounded-3xl border border-white/40 bg-white/90 p-6 backdrop-blur dark:border-white/10 dark:bg-white/5">
-            <p class="text-xs uppercase text-slate-500">Portfolio projects</p>
-            <p class="mt-3 font-serif text-3xl text-lagoon dark:text-white" x-text="tiles.portfolio_projects ?? '—'"></p>
-        </article>
-        <article class="rounded-3xl border border-white/40 bg-white/90 p-6 backdrop-blur dark:border-white/10 dark:bg-white/5">
-            <p class="text-xs uppercase text-slate-500">Verified giving (KES)</p>
-            <p class="mt-3 font-serif text-3xl text-lagoon dark:text-white" x-text="tiles.verified_giving_kes ? tiles.verified_giving_kes.toLocaleString() : '—'"></p>
-        </article>
-        <article class="rounded-3xl border border-white/40 bg-white/90 p-6 backdrop-blur dark:border-white/10 dark:bg-white/5">
-            <p class="text-xs uppercase text-slate-500">Governance queues</p>
-            <p class="mt-3 font-serif text-3xl text-lagoon dark:text-white" x-text="tiles.governance_queues ?? '—'"></p>
-        </article>
+
+    <div class="mt-12 overflow-hidden rounded-[2rem] border border-white/50 bg-gradient-to-br from-lagoon via-lagoon to-forest p-8 text-center text-white shadow-2xl sm:p-10">
+        <h3 class="font-serif text-2xl sm:text-3xl">See impact in the field</h3>
+        <p class="mx-auto mt-3 max-w-xl text-sm text-slate-200 sm:text-base">Explore projects, groups, and stories shaping Kiambu-Karai wards.</p>
+        <div class="mt-6 flex flex-wrap justify-center gap-3">
+            <a href="{% url 'core:projects_portal' %}" class="rounded-2xl bg-white/15 px-5 py-2.5 text-xs font-bold uppercase tracking-wider backdrop-blur hover:bg-white/25">Projects</a>
+            <a href="{% url 'core:groups_portal' %}" class="rounded-2xl bg-gold px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-lagoon">Groups</a>
+        </div>
     </div>
 </section>
 {% endblock %}

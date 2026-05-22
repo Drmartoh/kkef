@@ -1,8 +1,18 @@
 {% extends "base.html" %}
-{% block title %}API explorer{% endblock %}
+{% block title %}API explorer · KKEF{% endblock %}
+
+{% block hero %}
+{% include "includes/page_hero.html" with kicker="Developer" title="API surface sketch" subtitle="Placeholder route when DEBUG=True. Use OpenAPI or Postman for stakeholder onboarding." icon="fa-code" variant="royal" only %}
+{% endblock %}
+
 {% block content %}
-<section class="mx-auto max-w-4xl px-4 py-16 space-y-4">
-    <h1 class="font-serif text-3xl text-lagoon dark:text-white">API surface sketch</h1>
-    <p class="text-sm text-slate-600 dark:text-slate-300">This placeholder route only appears when <code class="rounded bg-slate-100 px-1 text-xs dark:bg-white/10">DEBUG=True</code>. Prefer OpenAPI tooling or Postman collections for stakeholder onboarding.</p>
+<section class="kkef-page mx-auto max-w-4xl px-4 py-12 sm:py-16">
+    <div class="kkef-glass p-6 sm:p-8">
+        <p class="text-sm text-slate-600 dark:text-slate-300">
+            Endpoints live under <code class="rounded bg-slate-100 px-1 text-xs dark:bg-white/10">/api/v1/</code>.
+            Authenticate with session cookies or JWT from the accounts flow.
+        </p>
+        <a href="/api/v1/" class="kkef-btn-primary mt-6">Browse API root</a>
+    </div>
 </section>
 {% endblock %}

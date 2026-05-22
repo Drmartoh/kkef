@@ -1,16 +1,16 @@
 {% extends "base.html" %}
 {% block title %}Give & partner · Kiambu Empowerment Forum{% endblock %}
+
+{% block hero %}
+{% include "includes/page_hero.html" with kicker="Give · Share · Join" title="Support KKEF in one seamless flow" subtitle="Contribute funds, in-kind resources, or send a letter — no account required." icon="fa-hand-holding-heart" variant="gold" %}
+{% endblock %}
+
 {% block content %}
-<section class="mx-auto max-w-5xl px-4 py-12 space-y-14" x-data="{ donorTab: '{% if donor_form.kind.value %}{{ donor_form.kind.value }}{% else %}money{% endif %}' }">
-    <header class="text-center space-y-4">
-        <p class="text-xs uppercase tracking-[0.35em] text-forest">Give · Share · Join</p>
-        <h1 class="font-serif text-4xl text-lagoon dark:text-white md:text-5xl">Support KKEF in one seamless flow</h1>
-        <p class="mx-auto max-w-2xl text-slate-600 dark:text-slate-300">
-            Contribute funds, offer sports gear, farm inputs, trees, and more—or send a letter or proposal.
-            Prefer email? Write us directly at
-            <a class="font-semibold text-forest underline decoration-gold/60 hover:text-royal" href="mailto:{{ DONATE_INBOX_EMAIL }}">{{ DONATE_INBOX_EMAIL }}</a>.
-        </p>
-    </header>
+<section class="kkef-page mx-auto max-w-5xl px-4 py-12 space-y-10 sm:space-y-14" x-data="{ donorTab: '{% if donor_form.kind.value %}{{ donor_form.kind.value }}{% else %}money{% endif %}' }">
+    <p class="text-center text-sm text-slate-600 dark:text-slate-300">
+        Prefer email? <a class="font-semibold text-forest hover:underline" href="mailto:{{ DONATE_INBOX_EMAIL }}">{{ DONATE_INBOX_EMAIL }}</a>
+        · Call {% include "includes/contact_phones.html" %}
+    </p>
 
     {% if messages %}
         <div class="mx-auto max-w-3xl space-y-3">
@@ -23,7 +23,7 @@
     {% endif %}
 
     <!-- Donor intake -->
-    <div id="give" class="rounded-[36px] border border-white/50 bg-white/90 p-6 shadow-2xl shadow-lagoon/10 backdrop-blur-xl dark:border-white/10 dark:bg-[#0c1525]/90 md:p-10">
+    <div id="give" class="kkef-glass p-6 md:p-10">
         <div class="flex flex-col gap-2 border-b border-slate-200 pb-6 dark:border-white/10 md:flex-row md:items-end md:justify-between">
             <div>
                 <h2 class="font-serif text-2xl text-lagoon dark:text-white">Make a contribution</h2>
@@ -159,7 +159,7 @@
     </div>
 
     <!-- Group application -->
-    <div id="join-group" class="rounded-[36px] border border-gold/40 bg-gradient-to-br from-white via-white to-gold/10 p-6 shadow-2xl dark:from-[#0c1525] dark:via-[#0c1525] dark:to-gold/10 md:p-10">
+    <div id="join-group" class="kkef-glass border-gold/30 bg-gradient-to-br from-white via-white to-gold/10 p-6 dark:from-lagoon/80 dark:via-lagoon/80 dark:to-gold/10 md:p-10">
         <div class="max-w-3xl space-y-2">
             <p class="text-xs uppercase tracking-[0.3em] text-gold">Registered groups</p>
             <h2 class="font-serif text-3xl text-lagoon dark:text-white">Apply for your group to join the forum</h2>
