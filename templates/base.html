@@ -83,7 +83,7 @@
     <div class="bg-gradient-to-tr from-royal/40 via-transparent to-gold/30 blur-3xl h-[380px] w-[380px] rounded-full absolute right-[-80px] top-32"></div>
 </div>
 
-{% include "includes/navbar.html" %}
+{% block navbar %}{% include "includes/navbar.html" %}{% endblock %}
 
 {% block hero %}{% endblock %}
 

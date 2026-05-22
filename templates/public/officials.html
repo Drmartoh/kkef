@@ -24,6 +24,21 @@
   @media (prefers-reduced-motion: reduce) {
     .officials-float { animation: none; }
   }
+  .official-portrait {
+    width: 7rem;
+    height: 7rem;
+    flex-shrink: 0;
+    overflow: hidden;
+    border-radius: 9999px;
+  }
+  .official-portrait--featured {
+    width: 8.5rem;
+    height: 8.5rem;
+  }
+  @media (min-width: 640px) {
+    .official-portrait { width: 8rem; height: 8rem; }
+    .official-portrait--featured { width: 9.5rem; height: 9.5rem; }
+  }
 </style>
 <script>
   document.addEventListener('alpine:init', () => {

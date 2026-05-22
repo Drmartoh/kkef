@@ -40,6 +40,29 @@ class ForumOfficial(TimeStampedModel):
     def __str__(self) -> str:
         return f"{self.name} ({self.role})"
 
+    def save(self, *args, **kwargs):
+        reprocess = kwargs.pop("reprocess_photo", False)
+        if self.photo:
+            should_process = reprocess
+            if not should_process and self.pk:
+                previous = (
+                    ForumOfficial.objects.filter(pk=self.pk)
+                    .values_list("photo", flat=True)
+                    .first()
+                )
+                should_process = str(previous or "") != str(self.photo)
+            elif not self.pk:
+                should_process = True
+
+            if should_process:
+                from apps.core.official_images import normalize_official_photo
+
+                normalized = normalize_official_photo(self.photo)
+                if normalized:
+                    self.photo.save(normalized.name, normalized, save=False)
+
+        super().save(*args, **kwargs)
+
     @property
     def photo_url(self) -> str:
         if self.photo:

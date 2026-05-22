@@ -48,5 +48,14 @@
             <p class="mt-2 text-xs font-bold uppercase tracking-wider text-slate-500">GIS intelligence</p>
         </div>
     </div>
+
+    <div id="contact" class="kkef-glass mt-12 scroll-mt-28 p-6 text-center sm:p-8">
+        <p class="text-xs font-bold uppercase tracking-[0.3em] text-forest">Contact</p>
+        <h2 class="mt-3 font-serif text-2xl text-lagoon dark:text-white">Reach the KKEF secretariat</h2>
+        <p class="mt-4 text-lg font-semibold text-lagoon dark:text-white">
+            {% include "includes/contact_phones.html" %}
+        </p>
+        <a href="{% url 'core:donate_portal' %}" class="kkef-btn-primary mt-6">Partner with us</a>
+    </div>
 </section>
 {% endblock %}

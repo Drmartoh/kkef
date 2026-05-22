@@ -1,0 +1,71 @@
+{% load static %}
+<section class="home-hero relative min-h-[88vh] overflow-hidden bg-[#0c1f14] text-white sm:min-h-[90vh]">
+    <div class="home-hero__photo absolute inset-0" aria-hidden="true">
+        <img
+            src="{% static 'img/kkef-hero-bg.png' %}"
+            alt=""
+            class="h-full w-full object-cover object-center"
+            width="1920"
+            height="1080"
+            fetchpriority="high"
+        >
+    </div>
+    <div class="home-hero__shade absolute inset-0 bg-gradient-to-r from-[#071410]/95 from-0% via-[#0a1812]/82 via-[42%] to-[#0a1812]/35 to-100%"></div>
+    <div class="home-hero__shade absolute inset-0 bg-gradient-to-t from-[#071410]/80 via-transparent to-[#071410]/25"></div>
+
+    <div class="relative z-10 mx-auto flex min-h-[88vh] max-w-7xl flex-col justify-center px-4 pb-28 pt-10 sm:min-h-[90vh] sm:pb-32 sm:pt-12 lg:pb-36 lg:pt-14">
+        <div class="max-w-2xl lg:max-w-xl xl:max-w-2xl">
+            <h1 class="font-serif text-[2rem] leading-[1.15] sm:text-5xl lg:text-[3.25rem] lg:leading-[1.12]">
+                <span class="block text-white">The county umbrella</span>
+                <span class="block text-white">for registered groups —</span>
+                <span class="block text-[#8fd475]">and the bridge to donors</span>
+                <span class="block text-[#8fd475]">who fund their work.</span>
+            </h1>
+            <div class="mt-6 h-1 w-14 rounded-full bg-gold"></div>
+            <p class="mt-6 max-w-xl text-sm leading-relaxed text-white/90 sm:text-base">
+                KKEF serves every registered community organisation in Kiambu under one forum: we steward group initiatives with rigour, represent members with a unified voice, and actively source donors and sponsors on their behalf so local programmes secure the capital they need.
+            </p>
+            <div class="mt-8 flex flex-col gap-3 min-[420px]:flex-row min-[420px]:flex-wrap">
+                <a href="{% url 'core:donate_portal' %}#join-group" class="inline-flex items-center justify-center gap-2 rounded-xl bg-[#8fd475] px-6 py-3.5 text-sm font-bold text-[#0f172a] shadow-lg shadow-black/20 transition hover:bg-[#9fe085]">
+                    <i class="fa-solid fa-users"></i>
+                    For Members
+                    <i class="fa-solid fa-arrow-right text-xs opacity-80"></i>
+                </a>
+                <a href="{% url 'core:donate_portal' %}" class="inline-flex items-center justify-center gap-2 rounded-xl border-2 border-white/70 bg-white/5 px-6 py-3.5 text-sm font-bold text-white backdrop-blur transition hover:border-white hover:bg-white/10">
+                    <i class="fa-solid fa-hand-holding-heart"></i>
+                    For Donors &amp; Partners
+                    <i class="fa-solid fa-arrow-right text-xs opacity-80"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="mt-14 grid grid-cols-1 gap-8 border-t border-white/15 pt-10 sm:grid-cols-2 lg:mt-auto lg:grid-cols-4 lg:gap-6 lg:pt-12">
+            <div class="home-hero__pillar">
+                <i class="fa-solid fa-shield-halved text-xl text-[#8fd475]"></i>
+                <p class="mt-3 text-sm font-bold uppercase tracking-wide text-white">Stewardship</p>
+                <p class="mt-2 text-sm leading-relaxed text-white/80">We manage initiatives with transparency and rigour.</p>
+            </div>
+            <div class="home-hero__pillar">
+                <i class="fa-solid fa-people-group text-xl text-[#8fd475]"></i>
+                <p class="mt-3 text-sm font-bold uppercase tracking-wide text-white">Representation</p>
+                <p class="mt-2 text-sm leading-relaxed text-white/80">We unify voices and advocate for members at county level.</p>
+            </div>
+            <div class="home-hero__pillar">
+                <i class="fa-solid fa-seedling text-xl text-[#8fd475]"></i>
+                <p class="mt-3 text-sm font-bold uppercase tracking-wide text-white">Resource Mobilisation</p>
+                <p class="mt-2 text-sm leading-relaxed text-white/80">We connect groups to donors and sponsors that fund impact.</p>
+            </div>
+            <div class="home-hero__pillar">
+                <i class="fa-solid fa-chart-line text-xl text-[#8fd475]"></i>
+                <p class="mt-3 text-sm font-bold uppercase tracking-wide text-white">Stronger Communities</p>
+                <p class="mt-2 text-sm leading-relaxed text-white/80">Well-funded programmes create lasting change across Kiambu.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="home-hero__wave pointer-events-none absolute bottom-0 left-0 right-0 z-20 text-slate-50 dark:text-[#070c16]" aria-hidden="true">
+        <svg class="block h-12 w-full sm:h-16 lg:h-20" viewBox="0 0 1440 80" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+            <path fill="currentColor" d="M0,48 C360,88 720,8 1080,40 C1260,56 1380,64 1440,52 L1440,80 L0,80 Z"></path>
+        </svg>
+    </div>
+</section>

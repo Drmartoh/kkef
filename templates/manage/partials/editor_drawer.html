@@ -123,7 +123,14 @@
                     <div><label class="field-label">Bio</label><textarea x-model="editor.record.bio" class="field-input" rows="4"></textarea></div>
                     <div><label class="field-label">Tenure</label><input x-model="editor.record.tenure" class="field-input"></div>
                     <div><label class="field-label">Focus areas (comma-separated)</label><input x-model="editor.record.focus_areas_text" class="field-input"></div>
-                    <div><label class="field-label">Portrait photo</label><input type="file" accept="image/*" @change="setFile($event, 'photo')" class="field-input"></div>
+                    <div>
+                        <label class="field-label">Portrait photo</label>
+                        <p class="mb-2 text-xs text-slate-500">Square headshot recommended. Uploads are auto-resized to 400×400 px for the public page.</p>
+                        <input type="file" accept="image/*" @change="setFile($event, 'photo')" class="field-input">
+                        <template x-if="editor.record.photo_url">
+                            <img :src="editor.record.photo_url" alt="Portrait preview" class="mt-3 h-24 w-24 rounded-full object-cover ring-2 ring-forest/20">
+                        </template>
+                    </div>
                     <label class="flex items-center gap-2 text-sm"><input type="checkbox" x-model="editor.record.is_published" class="rounded text-forest"> Published on officials page</label>
                 </div>
             </template>
